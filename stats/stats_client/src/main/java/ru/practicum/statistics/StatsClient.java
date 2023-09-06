@@ -38,13 +38,19 @@ public class StatsClient {
     }
 
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        Map<String, Object> params = Map.of(
-                "start", start.format(FORMAT_DATE_TIME),
-                "end", end.format(FORMAT_DATE_TIME),
-                "uris", String.join(", ", uris),
-                "unique", unique
-        );
-        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", params);
+
+        if (uris != null) {
+            return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", Map.of(
+                    "start", start.format(FORMAT_DATE_TIME),
+                    "end", end.format(FORMAT_DATE_TIME),
+                    "uris", String.join(", ", uris),
+                    "unique", unique));
+        } else {
+            return get("/stats?start={start}&end={end}&unique={unique}", Map.of(
+                    "start", start.format(FORMAT_DATE_TIME),
+                    "end", end.format(FORMAT_DATE_TIME),
+                    "unique", unique));
+        }
     }
 
     protected ResponseEntity<Object> get(String path, @Nullable Map<String, Object> parameters) {

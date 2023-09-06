@@ -18,9 +18,10 @@ public interface StatRepository  extends JpaRepository<StatsView, Long> {
             "count(sv.fromIp)" +
             ") " +
             "from StatsView as sv " +
-            "where sv.viewed BETWEEN :startDateTime AND :endDateTime AND sv.url IN (:uris) " +
+            "WHERE sv.viewed BETWEEN :startDateTime AND :endDateTime " +
+            "AND (coalesce(:uris, null) is null or (sv.url in :uris)) " +
             "group by sv.nameApp, sv.url " +
-            "order by sv.url")
+            "order by 3 desc")
     List<StatsDto> getStats(LocalDateTime startDateTime, LocalDateTime endDateTime, List<String> uris);
 
     @Query(value = "select new dto.StatsDto(" +
@@ -29,8 +30,9 @@ public interface StatRepository  extends JpaRepository<StatsView, Long> {
             "count(distinct(sv.fromIp))" +
             ") " +
             "from StatsView as sv " +
-            "where sv.viewed BETWEEN :startDateTime AND :endDateTime AND sv.url IN (:uris) " +
+            "where sv.viewed BETWEEN :startDateTime AND :endDateTime " +
+            "AND (coalesce(:uris, null) is null or (sv.url in :uris)) " +
             "group by sv.nameApp, sv.url " +
-            "order by sv.url")
+            "order by 3 desc")
     List<StatsDto> getStatsUnique(LocalDateTime startDateTime, LocalDateTime endDateTime, List<String> uris);
 }
