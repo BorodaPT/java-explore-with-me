@@ -17,7 +17,7 @@ public interface StatRepository  extends JpaRepository<StatsView, Long> {
             "sv.url," +
             "count(sv.fromIp)" +
             ") " +
-            "from StatsView as sv "+
+            "from StatsView as sv " +
             "where sv.viewed BETWEEN :startDateTime AND :endDateTime AND sv.url IN (:uris) " +
             "group by sv.nameApp, sv.url " +
             "order by sv.url")
@@ -28,7 +28,7 @@ public interface StatRepository  extends JpaRepository<StatsView, Long> {
             "sv.url," +
             "count(distinct(sv.fromIp))" +
             ") " +
-            "from StatsView as sv "+
+            "from StatsView as sv " +
             "where sv.viewed BETWEEN :startDateTime AND :endDateTime AND sv.url IN (:uris) " +
             "group by sv.nameApp, sv.url " +
             "order by sv.url")
