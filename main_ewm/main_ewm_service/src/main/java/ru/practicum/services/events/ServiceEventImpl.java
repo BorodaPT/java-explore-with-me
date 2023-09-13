@@ -263,8 +263,9 @@ public class ServiceEventImpl implements ServiceEvent {
 
     //public
     @Override
-    public List<EventShortDto> getEventsPublic(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable, SortEvent sort, Integer from, Integer size, HttpServletRequest request) {
-        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
+    public List<EventShortDto> getEventsPublic(String text, List<Integer> categories, Boolean paid,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
+                                               SortEvent sort, Integer from, Integer size, HttpServletRequest request) {
         LocalDateTime start;
         LocalDateTime end;
         if (rangeStart != null && rangeEnd != null) {
@@ -278,14 +279,27 @@ public class ServiceEventImpl implements ServiceEvent {
             start = LocalDateTime.now().plusSeconds(1);
             end = LocalDateTime.now().plusYears(2);
         }
-        List<Event> events = repositoryEvent.findEventForPublic(paid, text, categories, start, end, PageRequest.of(from, size)).getContent();
+        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
+        List<Event> events;
+        if (text != null) {
+            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, start, end, PageRequest.of(from, size)).getContent();
+        } else {
+            events = repositoryEvent.findEventForPublic(paid, categories, start, end, PageRequest.of(from, size)).getContent();
+        }
+
         List<EventShortDto> results = new ArrayList<>();
         if (events.size() != 0) {
-            //Collections.sort(events, (e1, e2) -> e1.getEventDate().c);
             for (Event event : events) {
                 Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
-                results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
+                if (onlyAvailable && event.getParticipantLimit() != 0) {
+                    if (!event.getParticipantLimit().equals(cntRequest)) {
+                        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
+                        results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
+                    }
+                } else {
+                    Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
+                    results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
+                }
             }
             if (sort == SortEvent.VIEWS) {
                 Collections.sort(results, new Comparator<EventShortDto>() {
@@ -301,8 +315,8 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventFullDto getEventPublicForUserById(Long id, HttpServletRequest request) {
-        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         Event event = getEvent(id);
+        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);

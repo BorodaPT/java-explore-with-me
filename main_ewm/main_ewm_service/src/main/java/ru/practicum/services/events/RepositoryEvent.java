@@ -31,13 +31,18 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e " +
             "FROM Event e " +
-            "LEFT JOIN (SELECT event_id, count(requester_id) AS cntRequest  FROM ParticipationRequest WHERE status = 'CONFIRMED') pr ON e.id = pr.event_id " +
             "WHERE e.state = 'PUBLISHED' AND e.paid = :paid " +
-            "AND (coalesce(:text, null) is null or ((upper(e.annotation) like upper(concat('%', :text, '%')) OR upper(e.description) like upper(concat('%', :text, '%')))) " +
             "AND (coalesce(:categories, null) is null or (e.category in :categories)) " +
             "AND e.eventDate between :rangeStart AND :rangeEnd " +
-            "AND (e.participantLimit = 0 OR e.participantLimit > pr.cntRequest) " +
             "order by e.eventDate")
-    Page<Event> findEventForPublic(Boolean paid, String text, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    Page<Event> findEventForPublic(Boolean paid, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
+    @Query(value = "SELECT e " +
+            "FROM Event e " +
+            "WHERE e.state = 'PUBLISHED' AND e.paid = :paid " +
+            "AND ((upper(e.annotation) like upper(concat('%', :text, '%'))) OR (upper(e.description) like upper(concat('%', :text, '%')))) " +
+            "AND (coalesce(:categories, null) is null or (e.category in :categories)) " +
+            "AND e.eventDate between :rangeStart AND :rangeEnd " +
+            "order by e.eventDate")
+    Page<Event> findEventForPublicWithText(Boolean paid, String text, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }
