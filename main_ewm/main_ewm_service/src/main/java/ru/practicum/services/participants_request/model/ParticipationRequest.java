@@ -23,11 +23,11 @@ public class ParticipationRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
-    private User requester_id;
+    private User requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    private Event event_id;
+    private Event event;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
@@ -36,9 +36,9 @@ public class ParticipationRequest {
     @Enumerated(EnumType.STRING)
     private StatusUserRequestEvent status;
 
-    public ParticipationRequest(User requester_id, Event event_id, StatusUserRequestEvent status) {
-        this.requester_id = requester_id;
-        this.event_id = event_id;
+    public ParticipationRequest(User requester, Event event, StatusUserRequestEvent status) {
+        this.requester = requester;
+        this.event = event;
         this.status = status;
         created = LocalDateTime.now().withNano(0);
     }

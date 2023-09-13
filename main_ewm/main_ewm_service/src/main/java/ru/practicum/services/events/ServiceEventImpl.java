@@ -214,7 +214,7 @@ public class ServiceEventImpl implements ServiceEvent {
         if (updateEventAdminRequest.getDescription() != null && !updateEventAdminRequest.getDescription().equals("")) {
             event.setDescription(updateEventAdminRequest.getDescription());
         }
-        if (updateEventAdminRequest.getEventDate() != null ) {
+        if (updateEventAdminRequest.getEventDate() != null) {
             if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.CONFLICT);
             }

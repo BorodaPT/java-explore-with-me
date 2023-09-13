@@ -48,10 +48,10 @@ public class Event {
     private LocalDateTime publishedOn;
 
     @Column(name = "loc_lat", nullable = false)
-    private Float loc_lat;
+    private Float locLat;
 
     @Column(name = "loc_lon", nullable = false)
-    private Float loc_lon;
+    private Float locLon;
 
     @Column(name = "paid", nullable = false)
     private Boolean paid;
@@ -68,7 +68,7 @@ public class Event {
 
     public Event(String title, String annotation, String description, Category category, User initiator,
                  LocalDateTime createdOn, LocalDateTime eventDate, LocalDateTime publishedOn,
-                 Float loc_lat, Float loc_lon, Boolean paid, Long participantLimit,
+                 Float locLat, Float locLon, Boolean paid, Long participantLimit,
                  Boolean requestModeration, StatusEvent state) {
         this.title = title;
         this.annotation = annotation;
@@ -78,8 +78,8 @@ public class Event {
         this.createdOn = createdOn;
         this.eventDate = eventDate;
         this.publishedOn = publishedOn;
-        this.loc_lat = loc_lat;
-        this.loc_lon = loc_lon;
+        this.locLat = locLat;
+        this.locLon = locLon;
         this.paid = paid;
         this.participantLimit = participantLimit;
         this.requestModeration = requestModeration;

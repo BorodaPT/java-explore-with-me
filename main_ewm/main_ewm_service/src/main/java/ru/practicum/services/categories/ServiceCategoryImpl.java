@@ -58,7 +58,6 @@ public class ServiceCategoryImpl implements ServiceCategory {
     }
 
     //user
-
     @Override
     public List<CategoryDto> getForUser(Integer from, Integer size) {
         return MapperCategory.toDTO(repositoryCategory.findAllCat(PageRequest.of(from, size)).getContent());
@@ -66,12 +65,12 @@ public class ServiceCategoryImpl implements ServiceCategory {
 
     @Override
     public CategoryDto getForUserById(Long id) {
-        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория "+ id + "не найденa","Category not found",HttpStatus.NOT_FOUND));
+        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa","Category not found",HttpStatus.NOT_FOUND));
         return MapperCategory.toDTO(category);
     }
 
     @Override
     public Category getById(Long id) {
-        return repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория "+ id + "не найденa","Category not found",HttpStatus.NOT_FOUND));
+        return repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa","Category not found",HttpStatus.NOT_FOUND));
     }
 }

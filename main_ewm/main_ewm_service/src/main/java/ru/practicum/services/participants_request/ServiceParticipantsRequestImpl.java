@@ -92,7 +92,7 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
     public ParticipationRequestDto editUserRequestStatus(Long userId, Long requestId, StatusUserRequestEvent status) {
         User user = serviceUser.getById(userId);
         ParticipationRequest participationRequest = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден","Request not found", HttpStatus.NOT_FOUND));
-        if (!participationRequest.getRequester_id().getId().equals(userId)) {
+        if (!participationRequest.getRequester().getId().equals(userId)) {
             throw new EwmException("Отмена заявки доступна только пользователю, который ее оформил", "User is not owner", HttpStatus.CONFLICT);
         }
         participationRequest.setStatus(status);

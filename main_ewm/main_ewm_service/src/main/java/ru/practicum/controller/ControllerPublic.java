@@ -66,8 +66,9 @@ public class ControllerPublic {
                                           @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                           @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
                                           HttpServletRequest request) {
-        return serviceEvent.getEventsPublic(text, categories, isPaid, rangeStart ,rangeEnd ,isOnlyAvailable, sort, start, size, request);
+        return serviceEvent.getEventsPublic(text, categories, isPaid, rangeStart, rangeEnd, isOnlyAvailable, sort, start, size, request);
     }
+
     @GetMapping("/events/{id}")
     public EventFullDto findEventsId(@PathVariable("id") Long id, HttpServletRequest request) {
         return serviceEvent.getEventPublicForUserById(id, request);
