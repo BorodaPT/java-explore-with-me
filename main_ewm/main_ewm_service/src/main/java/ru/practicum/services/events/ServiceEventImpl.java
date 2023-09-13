@@ -171,7 +171,7 @@ public class ServiceEventImpl implements ServiceEvent {
     public EventFullDto getUserEvent(Long userId, Long eventId) {
         User user = serviceUser.getById(userId);
         Event event = getEvent(eventId);
-        if (event.getInitiator().getId() != userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new EwmException("Пользователь не является владельцем события", "User is not owner event", HttpStatus.CONFLICT);
         }
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
@@ -183,7 +183,7 @@ public class ServiceEventImpl implements ServiceEvent {
     public List<ParticipationRequestDto> getRequestFromEvent(Long userId, Long eventId) {
         User user = serviceUser.getById(userId);
         Event event = getEvent(eventId);
-        if (event.getInitiator().getId() != userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new EwmException("Пользователь не является владельцем события", "User is not owner event", HttpStatus.CONFLICT);
         }
         return serviceParticipantsRequest.getRequestsFromEvent(eventId);
@@ -291,7 +291,7 @@ public class ServiceEventImpl implements ServiceEvent {
                 Collections.sort(results, new Comparator<EventShortDto>() {
                     @Override
                     public int compare(EventShortDto a1, EventShortDto a2) {
-                        return (a1.getViews() < a2.getViews()) ? -1 : ((a1.getViews() == a2.getViews()) ? 0 : 1);
+                        return a1.getViews().compareTo(a2.getViews());
                     }
                 });
             }
