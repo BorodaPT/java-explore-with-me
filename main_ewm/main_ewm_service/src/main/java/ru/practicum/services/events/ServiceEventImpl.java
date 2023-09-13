@@ -86,8 +86,8 @@ public class ServiceEventImpl implements ServiceEvent {
         eventBase.setCategory(category);
         eventBase.setEventDate(event.getEventDate());
         eventBase.setDescription(event.getDescription());
-        eventBase.setLoc_lat(event.getLocationEvent().getLat());
-        eventBase.setLoc_lon(event.getLocationEvent().getLon());
+        eventBase.setLocLat(event.getLocationEvent().getLat());
+        eventBase.setLocLon(event.getLocationEvent().getLon());
         eventBase.setTitle(event.getTitle());
         if (event.getPaid() != null) {
             eventBase.setPaid(event.getPaid());
@@ -221,8 +221,8 @@ public class ServiceEventImpl implements ServiceEvent {
             event.setEventDate(updateEventAdminRequest.getEventDate());
         }
         if (updateEventAdminRequest.getLocationEvent() != null) {
-            event.setLoc_lat(updateEventAdminRequest.getLocationEvent().getLat());
-            event.setLoc_lon(updateEventAdminRequest.getLocationEvent().getLon());
+            event.setLocLat(updateEventAdminRequest.getLocationEvent().getLat());
+            event.setLocLon(updateEventAdminRequest.getLocationEvent().getLon());
         }
         if (updateEventAdminRequest.getPaid() != null) {
             event.setPaid(updateEventAdminRequest.getPaid());
