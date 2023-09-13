@@ -34,4 +34,11 @@ public class HitDto {
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
+
+    public HitDto(String app, String uri, String ip) {
+        this.app = app;
+        this.uri = uri;
+        this.ip = ip;
+        timestamp = LocalDateTime.now().withNano(0);
+    }
 }
