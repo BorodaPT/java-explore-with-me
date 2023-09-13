@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class EwmException extends RuntimeException {
 
-    private MessageException messageException;
+    private final MessageException messageException;
 
-    private HttpStatus status;
+    private final HttpStatus status;
 
     public EwmException(String reason, String message, HttpStatus status) {
         super();

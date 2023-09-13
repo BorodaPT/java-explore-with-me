@@ -5,11 +5,11 @@ import events.dto.EventShortDto;
 import events.dto.NewEventDto;
 import events.dto.ParticipationRequestDto;
 import events.enum_events.SortEvent;
-import events.model.UpdateEventUserRequest;
-import org.springframework.transaction.annotation.Transactional;
 import events.model.EventRequestStatusUpdateRequest;
 import events.model.EventRequestStatusUpdateResult;
 import events.model.UpdateEventAdminRequest;
+import events.model.UpdateEventUserRequest;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.services.events.model.Event;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,15 +51,15 @@ public interface ServiceEvent {
 
     //public
     List<EventShortDto> getEventsPublic(String text,
-                                       List<Integer> categories,
-                                       Boolean paid,
-                                       LocalDateTime rangeStart,
-                                       LocalDateTime rangeEnd,
-                                       Boolean onlyAvailable,
-                                       SortEvent sort,
-                                       Integer from,
-                                       Integer size,
-                                       HttpServletRequest request);
+                                        List<Integer> categories,
+                                        Boolean paid,
+                                        LocalDateTime rangeStart,
+                                        LocalDateTime rangeEnd,
+                                        Boolean onlyAvailable,
+                                        SortEvent sort,
+                                        Integer from,
+                                        Integer size,
+                                        HttpServletRequest request);
 
     EventFullDto getEventPublicForUserById(Long id, HttpServletRequest request);
 

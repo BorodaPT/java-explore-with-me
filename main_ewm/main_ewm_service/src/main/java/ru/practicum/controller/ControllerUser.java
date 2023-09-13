@@ -10,7 +10,6 @@ import events.model.EventRequestStatusUpdateResult;
 import events.model.UpdateEventUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import ru.practicum.services.events.ServiceEvent;
 import ru.practicum.services.participants_request.ServiceParticipantsRequest;
 
@@ -49,7 +48,7 @@ public class ControllerUser {
     public List<EventShortDto> getEvent(@PathVariable("userId") Long idUser,
                                         @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                         @RequestParam(name = "size", required = false, defaultValue = "10") Integer size
-                         ) {
+    ) {
         return serviceEvent.getUserEvents(idUser, start, size);
 
     }

@@ -32,7 +32,7 @@ public class MapperEvent {
                 eventDto.getParticipantLimit(),
                 eventDto.getRequestModeration(),
                 StatusEvent.PENDING
-                );
+        );
     }
 
     public static EventFullDto toNewEventFullDto(Event event) {

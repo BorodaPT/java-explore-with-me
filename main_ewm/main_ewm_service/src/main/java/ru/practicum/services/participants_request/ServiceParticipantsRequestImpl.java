@@ -50,14 +50,14 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
 
     @Override
     public ParticipationRequest getRequest(Long requestId) {
-        ParticipationRequest request = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден","Request not found", HttpStatus.NOT_FOUND));;
+        ParticipationRequest request = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден", "Request not found", HttpStatus.NOT_FOUND));
         return request;
     }
 
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         User user = serviceUser.getById(userId);
-        Event event = repositoryEvent.findById(eventId).orElseThrow(() -> new EwmException("Событие не найдено","Event not found",HttpStatus.NOT_FOUND));
+        Event event = repositoryEvent.findById(eventId).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
 
         if (event.getInitiator().getId().equals(userId)) {
             throw new EwmException("Пользователь владелец события", "User owner event", HttpStatus.CONFLICT);
@@ -91,7 +91,7 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
     @Override
     public ParticipationRequestDto editUserRequestStatus(Long userId, Long requestId, StatusUserRequestEvent status) {
         User user = serviceUser.getById(userId);
-        ParticipationRequest participationRequest = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден","Request not found", HttpStatus.NOT_FOUND));
+        ParticipationRequest participationRequest = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден", "Request not found", HttpStatus.NOT_FOUND));
         if (!participationRequest.getRequester().getId().equals(userId)) {
             throw new EwmException("Отмена заявки доступна только пользователю, который ее оформил", "User is not owner", HttpStatus.CONFLICT);
         }
@@ -101,13 +101,13 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
 
     @Override
     public ParticipationRequestDto editRequestStatus(Long requestId, StatusUserRequestEvent status) {
-        ParticipationRequest participationRequest = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден","Request not found", HttpStatus.NOT_FOUND));
+        ParticipationRequest participationRequest = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден", "Request not found", HttpStatus.NOT_FOUND));
         participationRequest.setStatus(status);
         return MapperParticipationRequest.toDto(repositoryParticipantsRequest.saveAndFlush(participationRequest));
     }
 
     @Override
     public Long countRequestEventConfirmed(Long idEvent) {
-        return repositoryParticipantsRequest.getCountConfirmedRequests(idEvent,StatusUserRequestEvent.CONFIRMED.toString());
+        return repositoryParticipantsRequest.getCountConfirmedRequests(idEvent, StatusUserRequestEvent.CONFIRMED.toString());
     }
 }

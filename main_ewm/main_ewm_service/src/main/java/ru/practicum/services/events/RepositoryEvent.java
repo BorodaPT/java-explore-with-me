@@ -38,6 +38,6 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
             "AND e.eventDate between :rangeStart AND :rangeEnd " +
             "AND (e.participantLimit = 0 OR e.participantLimit > pr.cntRequest) " +
             "order by e.eventDate")
-    Page<Event> findEventForPublic(Boolean paid, String text, List<Integer> categories,LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    Page<Event> findEventForPublic(Boolean paid, String text, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
 }

@@ -5,9 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exception.EwmException;
 import ru.practicum.services.users.mapper.MapperUser;
 import ru.practicum.services.users.model.User;
-import ru.practicum.exception.EwmException;
 import users.dto.UserDto;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class ServiceUserImpl implements ServiceUser {
     @Transactional
     @Override
     public void delete(Long id) {
-        User user = repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден","User not found",HttpStatus.NOT_FOUND));
+        User user = repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден", "User not found", HttpStatus.NOT_FOUND));
         repositoryUser.deleteById(id);
     }
 
@@ -43,6 +43,6 @@ public class ServiceUserImpl implements ServiceUser {
 
     @Override
     public User getById(Long id) {
-        return repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден","User not found",HttpStatus.NOT_FOUND));
+        return repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден", "User not found", HttpStatus.NOT_FOUND));
     }
 }

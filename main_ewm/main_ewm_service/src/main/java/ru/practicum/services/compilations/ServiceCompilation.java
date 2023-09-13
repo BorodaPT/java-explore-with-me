@@ -2,11 +2,10 @@ package ru.practicum.services.compilations;
 
 import compilation.dto.CompilationDto;
 import compilation.dto.NewCompilationDto;
-import events.dto.EventShortDto;
 
 import java.util.List;
 
-public interface ServiceCompilation  {
+public interface ServiceCompilation {
 
     //admin
     CompilationDto create(NewCompilationDto newCompilationDto);

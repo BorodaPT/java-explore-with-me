@@ -7,9 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exception.EwmException;
 import ru.practicum.services.categories.mapper.MapperCategory;
 import ru.practicum.services.categories.model.Category;
-import ru.practicum.exception.EwmException;
 
 import java.util.List;
 
@@ -24,26 +24,26 @@ public class ServiceCategoryImpl implements ServiceCategory {
     @Override
     public CategoryDto create(NewCategoryDto categoryDto) {
         if (categoryDto.getName() == null) {
-            throw new EwmException("Некорректное заполенние параметров катагории","Category bad field",HttpStatus.NOT_FOUND);
+            throw new EwmException("Некорректное заполенние параметров катагории", "Category bad field", HttpStatus.NOT_FOUND);
         }
         try {
             return MapperCategory.toDTO(repositoryCategory.save(MapperCategory.toCategory(categoryDto)));
         } catch (RuntimeException e) {
-            throw new EwmException("Наименование не уникально","Category double",HttpStatus.CONFLICT);
+            throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
     }
 
     @Transactional
     @Override
     public CategoryDto edit(Long id, NewCategoryDto categoryDto) {
-        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория для изменения не найдена","Category not found",HttpStatus.NOT_FOUND));
+        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория для изменения не найдена", "Category not found", HttpStatus.NOT_FOUND));
         if (categoryDto.getName() == null || categoryDto.getName().equals("")) {
-            throw new EwmException("Не указано наименование категории","Category empty",HttpStatus.BAD_REQUEST);
+            throw new EwmException("Не указано наименование категории", "Category empty", HttpStatus.BAD_REQUEST);
         }
         try {
             return MapperCategory.toDTO(repositoryCategory.saveAndFlush(MapperCategory.toCategory(categoryDto)));
         } catch (RuntimeException e) {
-            throw new EwmException("Наименование не уникально","Category double",HttpStatus.CONFLICT);
+            throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
     }
 
@@ -65,12 +65,12 @@ public class ServiceCategoryImpl implements ServiceCategory {
 
     @Override
     public CategoryDto getForUserById(Long id) {
-        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa","Category not found",HttpStatus.NOT_FOUND));
+        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa", "Category not found", HttpStatus.NOT_FOUND));
         return MapperCategory.toDTO(category);
     }
 
     @Override
     public Category getById(Long id) {
-        return repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa","Category not found",HttpStatus.NOT_FOUND));
+        return repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa", "Category not found", HttpStatus.NOT_FOUND));
     }
 }

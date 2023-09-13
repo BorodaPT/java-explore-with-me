@@ -33,7 +33,10 @@ import ru.practicum.statistics.StatsClient;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,7 +55,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public Event getEvent(Long eventId) {
-        Event event = repositoryEvent.findById(eventId).orElseThrow(() -> new EwmException("Событие не найдено","Event not found",HttpStatus.NOT_FOUND));
+        Event event = repositoryEvent.findById(eventId).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
         return event;
     }
 
@@ -103,7 +106,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(refEvent.getId());
 
-        Long cntViews = getCountViews(refEvent.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + refEvent.getId()), false);
+        Long cntViews = getCountViews(refEvent.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + refEvent.getId()), false);
 
         return MapperEvent.toEventFullDto(refEvent, cntViews, cntRequest);
     }
@@ -157,7 +160,7 @@ public class ServiceEventImpl implements ServiceEvent {
         if (events.size() != 0) {
             for (Event event : events) {
                 Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
                 results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
             }
         }
@@ -172,7 +175,7 @@ public class ServiceEventImpl implements ServiceEvent {
             throw new EwmException("Пользователь не является владельцем события", "User is not owner event", HttpStatus.CONFLICT);
         }
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
 
@@ -183,7 +186,7 @@ public class ServiceEventImpl implements ServiceEvent {
         if (event.getInitiator().getId() != userId) {
             throw new EwmException("Пользователь не является владельцем события", "User is not owner event", HttpStatus.CONFLICT);
         }
-        return  serviceParticipantsRequest.getRequestsFromEvent(eventId);
+        return serviceParticipantsRequest.getRequestsFromEvent(eventId);
     }
 
     //admin
@@ -194,7 +197,7 @@ public class ServiceEventImpl implements ServiceEvent {
         if (events.size() != 0) {
             for (Event event : events) {
                 Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
                 resultEvents.add(MapperEvent.toEventFullDto(event, cntViews, cntRequest));
             }
         }
@@ -254,14 +257,14 @@ public class ServiceEventImpl implements ServiceEvent {
         }
         Event refEvent = repositoryEvent.saveAndFlush(event);
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(refEvent, cntViews, cntRequest);
     }
 
     //public
     @Override
     public List<EventShortDto> getEventsPublic(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable, SortEvent sort, Integer from, Integer size, HttpServletRequest request) {
-        statsClient.postHit(new HitDto("ewm_service",request.getRequestURI(),request.getRemoteAddr()));
+        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         LocalDateTime start;
         LocalDateTime end;
         if (rangeStart != null && rangeEnd != null) {
@@ -281,7 +284,7 @@ public class ServiceEventImpl implements ServiceEvent {
             //Collections.sort(events, (e1, e2) -> e1.getEventDate().c);
             for (Event event : events) {
                 Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+                Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
                 results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
             }
             if (sort == SortEvent.VIEWS) {
@@ -298,10 +301,10 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventFullDto getEventPublicForUserById(Long id, HttpServletRequest request) {
-        statsClient.postHit(new HitDto("ewm_service",request.getRequestURI(),request.getRemoteAddr()));
+        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         Event event = getEvent(id);
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
 
@@ -311,7 +314,7 @@ public class ServiceEventImpl implements ServiceEvent {
         List<EventShortDto> resultEvents = new ArrayList<>();
         for (Event event : events) {
             Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-            Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0),List.of("/events/" + event.getId()), false);
+            Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
             resultEvents.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
         }
         return resultEvents;

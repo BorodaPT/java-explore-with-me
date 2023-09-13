@@ -47,6 +47,7 @@ public class ControllerAdmin {
     public void delete(@PathVariable("catId") Long id) {
         serviceCategory.delete(id);
     }
+
     //events
     @GetMapping("/events")
     public List<EventFullDto> findEvents(@RequestParam(name = "users", required = false) List<Integer> users,
@@ -91,7 +92,7 @@ public class ControllerAdmin {
 
     @PatchMapping("compilations/{compId}")
     public CompilationDto editCompilations(@PathVariable("eventId") Long id,
-                                               @RequestBody NewCompilationDto newCompilationDto) {
+                                           @RequestBody NewCompilationDto newCompilationDto) {
         return serviceCompilation.edit(id, newCompilationDto);
     }
 
