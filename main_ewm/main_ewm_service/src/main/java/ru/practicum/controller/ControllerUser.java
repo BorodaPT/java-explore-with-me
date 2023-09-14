@@ -10,15 +10,18 @@ import events.model.EventRequestStatusUpdateResult;
 import events.model.UpdateEventUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.services.events.ServiceEvent;
 import ru.practicum.services.participants_request.ServiceParticipantsRequest;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/users")
+@Validated
 public class ControllerUser {
 
     private final ServiceEvent serviceEvent;
@@ -28,21 +31,22 @@ public class ControllerUser {
     //event
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}/events")
-    public EventFullDto createEvent(@PathVariable("userId") Long idUser, @RequestBody NewEventDto newEventDto) {
+    public EventFullDto createEvent(@PathVariable("userId") Long idUser,
+                                    @Valid @RequestBody NewEventDto newEventDto) {
         return serviceEvent.createEvent(idUser, newEventDto);
     }
 
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto editEvent(@PathVariable("userId") Long idUser,
                                   @PathVariable("eventId") Long idEvent,
-                                  @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
         return serviceEvent.editEvent(idEvent, idUser, updateEventUserRequest);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests")
     public EventRequestStatusUpdateResult editEventRequest(@PathVariable("userId") Long idUser,
                                                            @PathVariable("eventId") Long idEvent,
-                                                           @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+                                                           @Valid @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         return serviceEvent.editStatus(idUser, idEvent, eventRequestStatusUpdateRequest);
     }
 

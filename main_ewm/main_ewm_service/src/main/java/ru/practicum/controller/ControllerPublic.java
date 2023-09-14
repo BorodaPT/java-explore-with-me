@@ -7,6 +7,7 @@ import events.dto.EventShortDto;
 import events.enum_events.SortEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@Validated
 public class ControllerPublic {
 
     private final ServiceCompilation serviceCompilation;
@@ -57,7 +59,7 @@ public class ControllerPublic {
     //events
     @GetMapping("/events")
     public List<EventShortDto> findEvents(@RequestParam(name = "text", required = false) String text,
-                                          @RequestParam(name = "categories", required = false) List<Integer> categories,
+                                          @RequestParam(name = "categories", required = false) List<Long> categories,
                                           @RequestParam(name = "paid", required = false, defaultValue = "false") Boolean isPaid,
                                           @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                           @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,

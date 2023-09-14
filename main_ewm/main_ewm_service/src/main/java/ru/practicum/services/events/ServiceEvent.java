@@ -38,9 +38,9 @@ public interface ServiceEvent {
     List<ParticipationRequestDto> getRequestFromEvent(Long userId, Long eventId);
 
     //admin
-    List<EventFullDto> getEventForAdmin(List<Integer> users,
+    List<EventFullDto> getEventForAdmin(List<Long> users,
                                         List<String> state,
-                                        List<Integer> categories,
+                                        List<Long> categories,
                                         LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd,
                                         Integer from,
@@ -51,7 +51,7 @@ public interface ServiceEvent {
 
     //public
     List<EventShortDto> getEventsPublic(String text,
-                                        List<Integer> categories,
+                                        List<Long> categories,
                                         Boolean paid,
                                         LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd,

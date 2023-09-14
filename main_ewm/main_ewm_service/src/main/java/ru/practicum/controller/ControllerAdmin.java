@@ -9,6 +9,7 @@ import events.model.UpdateEventAdminRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.services.categories.ServiceCategory;
 import ru.practicum.services.compilations.ServiceCompilation;
@@ -16,12 +17,14 @@ import ru.practicum.services.events.ServiceEvent;
 import ru.practicum.services.users.ServiceUser;
 import users.dto.UserDto;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/admin")
+@Validated
 public class ControllerAdmin {
 
     private final ServiceUser serviceUser;
@@ -35,13 +38,13 @@ public class ControllerAdmin {
     //categories
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/categories")
-    public CategoryDto create(@RequestBody NewCategoryDto newCategoryDto) {
+    public CategoryDto create(@Valid @RequestBody NewCategoryDto newCategoryDto) {
         return serviceCategory.create(newCategoryDto);
     }
 
     @PatchMapping("/categories/{catId}")
     public CategoryDto edit(@PathVariable("catId") Long id,
-                            @RequestBody NewCategoryDto newCategoryDto) {
+                            @Valid @RequestBody NewCategoryDto newCategoryDto) {
         return serviceCategory.edit(id, newCategoryDto);
     }
 
@@ -53,9 +56,9 @@ public class ControllerAdmin {
 
     //events
     @GetMapping("/events")
-    public List<EventFullDto> findEvents(@RequestParam(name = "users", required = false) List<Integer> users,
+    public List<EventFullDto> findEvents(@RequestParam(name = "users", required = false) List<Long> users,
                                          @RequestParam(name = "states", required = false) List<String> states,
-                                         @RequestParam(name = "categories", required = false) List<Integer> categories,
+                                         @RequestParam(name = "categories", required = false) List<Long> categories,
                                          @RequestParam(name = "rangeStart") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                          @RequestParam(name = "rangeEnd") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                          @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
@@ -65,7 +68,7 @@ public class ControllerAdmin {
 
     @PatchMapping("/events/{eventId}")
     public EventFullDto editEvent(@PathVariable("eventId") Long id,
-                                  @RequestBody UpdateEventAdminRequest request) {
+                                  @Valid @RequestBody UpdateEventAdminRequest request) {
         return serviceEvent.editEventAdmin(id, request);
     }
 
@@ -79,7 +82,7 @@ public class ControllerAdmin {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/users")
-    public UserDto createUser(@RequestBody UserDto userDto) {
+    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
         return serviceUser.create(userDto);
     }
 
@@ -92,13 +95,13 @@ public class ControllerAdmin {
     //compilations
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("compilations")
-    public CompilationDto createCompilations(@RequestBody NewCompilationDto newCompilationDto) {
+    public CompilationDto createCompilations(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         return serviceCompilation.create(newCompilationDto);
     }
 
     @PatchMapping("compilations/{compId}")
     public CompilationDto editCompilations(@PathVariable("eventId") Long id,
-                                           @RequestBody NewCompilationDto newCompilationDto) {
+                                           @Valid @RequestBody NewCompilationDto newCompilationDto) {
         return serviceCompilation.edit(id, newCompilationDto);
     }
 

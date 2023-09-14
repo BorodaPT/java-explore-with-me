@@ -6,10 +6,7 @@ import events.dto.EventFullDto;
 import events.dto.EventShortDto;
 import events.dto.NewEventDto;
 import events.dto.ParticipationRequestDto;
-import events.enum_events.SortEvent;
-import events.enum_events.StatusAction;
-import events.enum_events.StatusEvent;
-import events.enum_events.StatusUserRequestEvent;
+import events.enum_events.*;
 import events.model.EventRequestStatusUpdateRequest;
 import events.model.EventRequestStatusUpdateResult;
 import events.model.UpdateEventAdminRequest;
@@ -37,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -135,6 +133,20 @@ public class ServiceEventImpl implements ServiceEvent {
             eventBase.setRequestModeration(event.getRequestModeration());
         }
 
+        if (event.getStateAction() != null) {
+            switch (event.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    eventBase.setState(StatusEvent.PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    eventBase.setState(StatusEvent.CANCELED);
+                default:
+                    throw new EwmException("Недопустимое значения статуса события", "Incorrect status event", HttpStatus.CONFLICT);
+            }
+
+        }
+
+
         Event refEvent = repositoryEvent.saveAndFlush(eventBase);
 
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(refEvent.getId());
@@ -146,7 +158,14 @@ public class ServiceEventImpl implements ServiceEvent {
 
     private Long getCountViews(LocalDateTime start, LocalDateTime end, List<String> events, Boolean unique) {
         ResponseEntity<Object> response = statsClient.getStats(start, end, events, unique);
-        List<StatsDto> statsDtos = (List<StatsDto>) response.getBody();
+        List<Object> listResp = (List<Object>) response.getBody();
+
+        List<StatsDto> statsDtos = new ArrayList<>();
+        if (listResp.size() != 0) {
+            statsDtos = listResp.stream()
+                    .map(element -> (StatsDto) element)
+                    .collect(Collectors.toList());
+        }
         if (statsDtos.size() != 0) {
             if (statsDtos.get(0).getHits() == null) {
                 return 0L;
@@ -232,7 +251,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
     //admin
     @Override
-    public List<EventFullDto> getEventForAdmin(List<Integer> users, List<String> state, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public List<EventFullDto> getEventForAdmin(List<Long> users, List<String> state, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         List<EventFullDto> resultEvents = new ArrayList<>();
         List<Event> events = repositoryEvent.findEventForAdmin(rangeStart, rangeEnd, users, state, categories, PageRequest.of(from, size)).getContent();
         if (events.size() != 0) {
@@ -304,7 +323,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
     //public
     @Override
-    public List<EventShortDto> getEventsPublic(String text, List<Integer> categories, Boolean paid,
+    public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                SortEvent sort, Integer from, Integer size, HttpServletRequest request) {
         LocalDateTime start;

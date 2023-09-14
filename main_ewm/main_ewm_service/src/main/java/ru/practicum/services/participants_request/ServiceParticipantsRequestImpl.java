@@ -18,7 +18,7 @@ import ru.practicum.services.users.model.User;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ServiceParticipantsRequestImpl implements ServiceParticipantsRequest {
 
@@ -41,7 +41,7 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
 
     @Override
     public List<ParticipationRequestDto> getRequestsByStatus(Long idEvent, StatusUserRequestEvent status) {
-        return MapperParticipationRequest.toDto(repositoryParticipantsRequest.findByEvent_idAndStatus(idEvent, status));
+        return MapperParticipationRequest.toDto(repositoryParticipantsRequest.findByEvent_idAndStatus(idEvent, status.toString()));
     }
 
     public ParticipationRequestDto getRequestsByEventAndRequestor(Long idEvent, Long requesterId) {
@@ -54,6 +54,7 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
         return request;
     }
 
+    @Transactional
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         User user = serviceUser.getById(userId);
@@ -88,6 +89,7 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
         return MapperParticipationRequest.toDto(repositoryParticipantsRequest.save(participationRequest));
     }
 
+    @Transactional
     @Override
     public ParticipationRequestDto editUserRequestStatus(Long userId, Long requestId, StatusUserRequestEvent status) {
         User user = serviceUser.getById(userId);
@@ -99,6 +101,7 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
         return MapperParticipationRequest.toDto(repositoryParticipantsRequest.saveAndFlush(participationRequest));
     }
 
+    @Transactional
     @Override
     public ParticipationRequestDto editRequestStatus(Long requestId, StatusUserRequestEvent status) {
         ParticipationRequest participationRequest = repositoryParticipantsRequest.findById(requestId).orElseThrow(() -> new EwmException("Закпрос не найден", "Request not found", HttpStatus.NOT_FOUND));

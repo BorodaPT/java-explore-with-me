@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ServiceCompilationImpl implements ServiceCompilation {
 
@@ -25,6 +25,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
 
     private final ServiceEvent serviceEvent;
 
+    @Transactional
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
         if (newCompilationDto.getTitle() == null) {
@@ -45,6 +46,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
         return MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(events));
     }
 
+    @Transactional
     @Override
     public CompilationDto edit(Long id, NewCompilationDto newCompilationDto) {
         Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
@@ -75,6 +77,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
         return MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(events));
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
