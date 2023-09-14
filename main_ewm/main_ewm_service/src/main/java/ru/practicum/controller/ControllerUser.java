@@ -9,6 +9,7 @@ import events.model.EventRequestStatusUpdateRequest;
 import events.model.EventRequestStatusUpdateResult;
 import events.model.UpdateEventUserRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.services.events.ServiceEvent;
 import ru.practicum.services.participants_request.ServiceParticipantsRequest;
@@ -25,6 +26,7 @@ public class ControllerUser {
     private final ServiceParticipantsRequest serviceParticipantsRequest;
 
     //event
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}/events")
     public EventFullDto createEvent(@PathVariable("userId") Long idUser, @RequestBody NewEventDto newEventDto) {
         return serviceEvent.createEvent(idUser, newEventDto);
@@ -66,9 +68,10 @@ public class ControllerUser {
     }
 
     //request
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}/requests")
     public ParticipationRequestDto createRequest(@PathVariable("userId") Long idUser,
-                                                 @RequestParam Long eventId) {
+                                                 @RequestParam("eventId") Long eventId) {
         return serviceParticipantsRequest.createRequest(idUser, eventId);
     }
 

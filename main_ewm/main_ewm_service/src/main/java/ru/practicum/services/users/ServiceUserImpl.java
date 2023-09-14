@@ -24,7 +24,7 @@ public class ServiceUserImpl implements ServiceUser {
     public UserDto create(UserDto user) {
         try {
             return MapperUser.toDTO(repositoryUser.save(MapperUser.toUser(user)));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new EwmException("Недопустимое значения параметров пользователя", e.getMessage(), HttpStatus.CONFLICT);
         }
     }
@@ -37,7 +37,7 @@ public class ServiceUserImpl implements ServiceUser {
     }
 
     @Override
-    public List<UserDto> get(List<Integer> ids, Integer start, Integer size) {
+    public List<UserDto> get(List<Long> ids, Integer start, Integer size) {
         return MapperUser.toDTO(repositoryUser.findById(ids, PageRequest.of(start, size)).getContent());
     }
 

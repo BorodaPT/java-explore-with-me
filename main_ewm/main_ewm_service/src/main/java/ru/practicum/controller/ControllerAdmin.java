@@ -8,6 +8,7 @@ import events.dto.EventFullDto;
 import events.model.UpdateEventAdminRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.services.categories.ServiceCategory;
 import ru.practicum.services.compilations.ServiceCompilation;
@@ -32,6 +33,7 @@ public class ControllerAdmin {
     private final ServiceCompilation serviceCompilation;
 
     //categories
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/categories")
     public CategoryDto create(@RequestBody NewCategoryDto newCategoryDto) {
         return serviceCategory.create(newCategoryDto);
@@ -43,6 +45,7 @@ public class ControllerAdmin {
         return serviceCategory.edit(id, newCategoryDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/categories/{catId}")
     public void delete(@PathVariable("catId") Long id) {
         serviceCategory.delete(id);
@@ -68,23 +71,26 @@ public class ControllerAdmin {
 
     //users
     @GetMapping("/users")
-    public List<UserDto> findUsers(@RequestParam(name = "ids", required = false) List<Integer> idUsers,
+    public List<UserDto> findUsers(@RequestParam(name = "ids", required = false) List<Long> idUsers,
                                    @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                    @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
         return serviceUser.get(idUsers, start, size);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/users")
     public UserDto createUser(@RequestBody UserDto userDto) {
         return serviceUser.create(userDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/users/{userId}")
     public void deleteUser(@PathVariable("eventId") Long id) {
         serviceUser.delete(id);
     }
 
     //compilations
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("compilations")
     public CompilationDto createCompilations(@RequestBody NewCompilationDto newCompilationDto) {
         return serviceCompilation.create(newCompilationDto);
@@ -96,6 +102,7 @@ public class ControllerAdmin {
         return serviceCompilation.edit(id, newCompilationDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("compilations/{compId}")
     public void deleteCompilations(@PathVariable("eventId") Long id) {
         serviceCompilation.delete(id);

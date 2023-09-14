@@ -14,5 +14,5 @@ public interface RepositoryUser extends JpaRepository<User, Long> {
 
     @Query(value = "select u from User as u " +
             "WHERE (coalesce(:ids, null) is null or (u.id in :ids))")
-    Page<User> findById(List<Integer> ids, Pageable pageable);
+    Page<User> findById(List<Long> ids, Pageable pageable);
 }
