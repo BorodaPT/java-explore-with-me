@@ -147,7 +147,7 @@ public class ServiceEventImpl implements ServiceEvent {
     private Long getCountViews(LocalDateTime start, LocalDateTime end, List<String> events, Boolean unique) {
         ResponseEntity<Object> response = statsClient.getStats(start, end, events, unique);
         List<StatsDto> statsDtos = (List<StatsDto>) response.getBody();
-        if (statsDtos.size() != 0 ) {
+        if (statsDtos.size() != 0) {
             if (statsDtos.get(0).getHits() == null) {
                 return 0L;
             } else {
