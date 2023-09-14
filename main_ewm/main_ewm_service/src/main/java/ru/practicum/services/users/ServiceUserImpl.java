@@ -22,6 +22,13 @@ public class ServiceUserImpl implements ServiceUser {
     @Transactional
     @Override
     public UserDto create(UserDto user) {
+        if (user.getName() == null) {
+            throw new EwmException("Не заполенно поле Name", "Name not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (user.getEmail() == null) {
+            throw new EwmException("Не заполенно поле Email", "Email not found", HttpStatus.BAD_REQUEST);
+        }
         try {
             return MapperUser.toDTO(repositoryUser.save(MapperUser.toUser(user)));
         } catch (RuntimeException e) {
@@ -43,6 +50,6 @@ public class ServiceUserImpl implements ServiceUser {
 
     @Override
     public User getById(Long id) {
-        return repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден", "User not found", HttpStatus.NOT_FOUND));
+        return repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь не найден", "User not found", HttpStatus.NOT_FOUND));
     }
 }

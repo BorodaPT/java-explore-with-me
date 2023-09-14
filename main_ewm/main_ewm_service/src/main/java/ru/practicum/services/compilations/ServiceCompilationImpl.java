@@ -27,6 +27,18 @@ public class ServiceCompilationImpl implements ServiceCompilation {
 
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
+        if (newCompilationDto.getTitle() == null) {
+            throw new EwmException("Не заполенно поле Title", "Title not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (newCompilationDto.getPinned() == null) {
+            newCompilationDto.setPinned(false);
+        }
+
+        if (newCompilationDto.getEvents() == null) {
+            throw new EwmException("Не заполенно поле Events", "Events not found", HttpStatus.BAD_REQUEST);
+        }
+
         List<Event> events = serviceEvent.getListEventForCompilation(newCompilationDto.getEvents());
         Compilation compilation = MapperCompilation.toCompilation(newCompilationDto, events);
         repositoryCompilation.save(compilation);
@@ -36,6 +48,19 @@ public class ServiceCompilationImpl implements ServiceCompilation {
     @Override
     public CompilationDto edit(Long id, NewCompilationDto newCompilationDto) {
         Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
+
+        if (newCompilationDto.getTitle() == null) {
+            throw new EwmException("Не заполенно поле Title", "Title not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (newCompilationDto.getPinned() == null) {
+            newCompilationDto.setPinned(false);
+        }
+
+        if (newCompilationDto.getEvents() == null) {
+            throw new EwmException("Не заполенно поле Events", "Events not found", HttpStatus.BAD_REQUEST);
+        }
+
         List<Event> events = serviceEvent.getListEventForCompilation(newCompilationDto.getEvents());
         compilation.setEvents(events);
         if (newCompilationDto.getTitle() != null) {

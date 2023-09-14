@@ -62,6 +62,15 @@ public class ServiceEventImpl implements ServiceEvent {
     //user
     @Override
     public EventFullDto createEvent(Long userId, NewEventDto newEvent) {
+
+        if (newEvent.getDescription() == null) {
+            throw new EwmException("Не заполенно поле Description", "Description not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (newEvent.getTitle() == null) {
+            throw new EwmException("Не заполенно поле Title", "Title not found", HttpStatus.BAD_REQUEST);
+        }
+
         User user = serviceUser.getById(userId);
         Category category = serviceCategory.getById(newEvent.getCategory());
         Event event = MapperEvent.toNewEvent(newEvent, category, user);
@@ -69,13 +78,22 @@ public class ServiceEventImpl implements ServiceEvent {
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.CONFLICT);
         }
+        if (event.getPaid() == null) {
+            event.setPaid(false);
+        }
+        if (event.getParticipantLimit() == null) {
+            event.setParticipantLimit(0L);
+        }
+        if (event.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        }
         return MapperEvent.toNewEventFullDto(repositoryEvent.save(event));
     }
 
     @Override
     public EventFullDto editEvent(Long userId, Long idEvent, UpdateEventUserRequest event) {
         User user = serviceUser.getById(userId);
-        Category category = serviceCategory.getById(event.getCategory().getId());
+        Category category;
 
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.CONFLICT);
@@ -85,13 +103,28 @@ public class ServiceEventImpl implements ServiceEvent {
             throw new EwmException("Событие уже запущено", "event is published", HttpStatus.CONFLICT);
         }
 
-        eventBase.setAnnotation(event.getAnnotation());
-        eventBase.setCategory(category);
-        eventBase.setEventDate(event.getEventDate());
-        eventBase.setDescription(event.getDescription());
-        eventBase.setLocLat(event.getLocationEvent().getLat());
-        eventBase.setLocLon(event.getLocationEvent().getLon());
-        eventBase.setTitle(event.getTitle());
+        if (event.getAnnotation() != null) {
+            eventBase.setAnnotation(event.getAnnotation());
+        }
+        if (event.getCategory() != null) {
+            category = serviceCategory.getById(event.getCategory().getId());
+            eventBase.setCategory(category);
+        }
+        if (event.getEventDate() != null) {
+            eventBase.setEventDate(event.getEventDate());
+        }
+        if (event.getDescription() != null) {
+            eventBase.setDescription(event.getDescription());
+        }
+        if (event.getLocationEvent().getLat() != null) {
+            eventBase.setLocLat(event.getLocationEvent().getLat());
+        }
+        if (event.getLocationEvent().getLon() != null) {
+            eventBase.setLocLon(event.getLocationEvent().getLon());
+        }
+        if (event.getTitle() != null) {
+            eventBase.setTitle(event.getTitle());
+        }
         if (event.getPaid() != null) {
             eventBase.setPaid(event.getPaid());
         }
