@@ -1,6 +1,5 @@
 package ru.practicum.services.participants_request;
 
-import events.enum_events.StatusUserRequestEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
