@@ -51,18 +51,6 @@ public class ServiceCompilationImpl implements ServiceCompilation {
     public CompilationDto edit(Long id, NewCompilationDto newCompilationDto) {
         Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
 
-        if (newCompilationDto.getTitle() == null) {
-            throw new EwmException("Не заполенно поле Title", "Title not found", HttpStatus.BAD_REQUEST);
-        }
-
-        if (newCompilationDto.getPinned() == null) {
-            newCompilationDto.setPinned(false);
-        }
-
-        if (newCompilationDto.getEvents() == null) {
-            throw new EwmException("Не заполенно поле Events", "Events not found", HttpStatus.BAD_REQUEST);
-        }
-
         List<Event> events = serviceEvent.getListEventForCompilation(newCompilationDto.getEvents());
         compilation.setEvents(events);
         if (newCompilationDto.getTitle() != null) {
@@ -87,7 +75,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
     //public
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
-        List<Compilation> compilations = repositoryCompilation.findByPinned(pinned, PageRequest.of(from, size)).getContent();
+        List<Compilation> compilations = repositoryCompilation.findByPinned(pinned, PageRequest.of(from / size, size));
         List<CompilationDto> results = new ArrayList<>();
         if (compilations.size() != 0) {
             for (Compilation compilation : compilations) {

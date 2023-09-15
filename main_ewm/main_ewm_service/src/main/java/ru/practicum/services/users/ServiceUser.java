@@ -15,7 +15,7 @@ public interface ServiceUser {
     @Transactional
     void delete(Long id);
 
-    List<UserDto> get(List<Long> ids, Integer start, Integer size);
+    List<UserDto> get(List<Long> ids, Integer from, Integer size);
 
     User getById(Long id);
 }

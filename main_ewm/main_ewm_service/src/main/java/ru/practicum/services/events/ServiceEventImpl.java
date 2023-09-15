@@ -152,6 +152,7 @@ public class ServiceEventImpl implements ServiceEvent {
                     break;
                 case CANCEL_REVIEW:
                     eventBase.setState(StatusEvent.CANCELED);
+                    break;
                 default:
                     throw new EwmException("Недопустимое значения статуса события", "Incorrect status event", HttpStatus.BAD_REQUEST);
             }
@@ -222,7 +223,7 @@ public class ServiceEventImpl implements ServiceEvent {
     @Override
     public List<EventShortDto> getUserEvents(Long userId, Integer from, Integer size) {
         User user = serviceUser.getById(userId);
-        List<Event> events = repositoryEvent.findByInitiator_id(userId, PageRequest.of(from, size)).getContent();
+        List<Event> events = repositoryEvent.findByInitiator_id(userId, PageRequest.of(from / size, size)).getContent();
         List<EventShortDto> results = new ArrayList<>();
         if (events.size() != 0) {
             for (Event event : events) {
@@ -260,7 +261,7 @@ public class ServiceEventImpl implements ServiceEvent {
     @Override
     public List<EventFullDto> getEventForAdmin(List<Long> users, List<StatusEvent> state, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         List<EventFullDto> resultEvents = new ArrayList<>();
-        List<Event> events = repositoryEvent.findEventForAdmin(rangeStart, rangeEnd, users, state, categories, PageRequest.of(from, size)).getContent();
+        List<Event> events = repositoryEvent.findEventForAdmin(rangeStart, rangeEnd, users, state, categories, PageRequest.of(from / size, size)).getContent();
         if (events.size() != 0) {
             for (Event event : events) {
                 Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
@@ -352,7 +353,7 @@ public class ServiceEventImpl implements ServiceEvent {
         if (text != null) {
             events = repositoryEvent.findEventForPublicWithText(paid, text, categories, start, end, PageRequest.of(from, size)).getContent();
         } else {
-            events = repositoryEvent.findEventForPublic(paid, categories, start, end, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublic(paid, categories, start, end, PageRequest.of(from / size, size)).getContent();
         }
 
         List<EventShortDto> results = new ArrayList<>();

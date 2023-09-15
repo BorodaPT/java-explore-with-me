@@ -44,8 +44,8 @@ public class ServiceUserImpl implements ServiceUser {
     }
 
     @Override
-    public List<UserDto> get(List<Long> ids, Integer start, Integer size) {
-        return MapperUser.toDTO(repositoryUser.findById(ids, PageRequest.of(start, size)).getContent());
+    public List<UserDto> get(List<Long> ids, Integer from, Integer size) {
+        return MapperUser.toDTO(repositoryUser.findById(ids, PageRequest.of(from / size, size)).getContent());
     }
 
     @Override

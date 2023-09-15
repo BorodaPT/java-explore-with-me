@@ -26,11 +26,13 @@ public class ServiceCategoryImpl implements ServiceCategory {
         if (categoryDto.getName() == null) {
             throw new EwmException("Некорректное заполенние параметров катагории", "Category bad field", HttpStatus.NOT_FOUND);
         }
-        try {
-            return MapperCategory.toDTO(repositoryCategory.save(MapperCategory.toCategory(categoryDto)));
-        } catch (RuntimeException e) {
+
+        if (repositoryCategory.existsByName(categoryDto.getName())) {
             throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
+
+        return MapperCategory.toDTO(repositoryCategory.save(MapperCategory.toCategory(categoryDto)));
+
     }
 
     @Transactional
@@ -60,7 +62,7 @@ public class ServiceCategoryImpl implements ServiceCategory {
     //user
     @Override
     public List<CategoryDto> getForUser(Integer from, Integer size) {
-        return MapperCategory.toDTO(repositoryCategory.findAllCat(PageRequest.of(from, size)).getContent());
+        return MapperCategory.toDTO(repositoryCategory.findAllCat(PageRequest.of(from / size, size)).getContent());
     }
 
     @Override
