@@ -362,11 +362,11 @@ public class ServiceEventImpl implements ServiceEvent {
                 Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
                 if (onlyAvailable && event.getParticipantLimit() != 0) {
                     if (!event.getParticipantLimit().equals(cntRequest)) {
-                        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
+                        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), true);
                         results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
                     }
                 } else {
-                    Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
+                    Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), true);
                     results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
                 }
             }
@@ -390,7 +390,7 @@ public class ServiceEventImpl implements ServiceEvent {
             throw new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND);
         }
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
-        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
+        Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), true);
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
 

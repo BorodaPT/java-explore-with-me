@@ -73,21 +73,17 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
             throw new EwmException("Заявка уже была офрмлена", "Limit", HttpStatus.CONFLICT);
         }
 
-        ParticipationRequest participationRequest = new ParticipationRequest();
-        participationRequest.setRequester(user);
-        participationRequest.setEvent(event);
+        ParticipationRequest participationRequest = new ParticipationRequest(user, event, StatusUserRequestEvent.PENDING);
         if (event.getParticipantLimit() != 0) {
             if (event.getParticipantLimit().equals(countRequestEventConfirmed(eventId))) {
                 throw new EwmException("Свободных мест не осталось", "Limit", HttpStatus.CONFLICT);
-            } else {
-                participationRequest.setStatus(StatusUserRequestEvent.PENDING);
             }
         } else {
             participationRequest.setStatus(StatusUserRequestEvent.CONFIRMED);
         }
 
         if (!event.getRequestModeration()) {
-            participationRequest = new ParticipationRequest(user, event, StatusUserRequestEvent.CONFIRMED);
+            participationRequest.setStatus(StatusUserRequestEvent.CONFIRMED);
         }
 
         return MapperParticipationRequest.toDto(repositoryParticipantsRequest.save(participationRequest));
