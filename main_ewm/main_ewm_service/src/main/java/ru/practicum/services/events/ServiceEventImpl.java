@@ -1,5 +1,7 @@
 package ru.practicum.services.events;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.HitDto;
 import dto.StatsDto;
 import events.dto.EventFullDto;
@@ -74,7 +76,7 @@ public class ServiceEventImpl implements ServiceEvent {
         Event event = MapperEvent.toNewEvent(newEvent, category, user);
 
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.CONFLICT);
+            throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.BAD_REQUEST);
         }
         if (event.getPaid() == null) {
             event.setPaid(false);
@@ -83,7 +85,7 @@ public class ServiceEventImpl implements ServiceEvent {
             event.setParticipantLimit(0L);
         }
         if (event.getRequestModeration() == null) {
-            event.setRequestModeration(true);
+            event.setRequestModeration(false);
         }
         return MapperEvent.toNewEventFullDto(repositoryEvent.save(event));
     }
@@ -94,11 +96,11 @@ public class ServiceEventImpl implements ServiceEvent {
         Category category;
 
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.CONFLICT);
+            throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.BAD_REQUEST);
         }
         Event eventBase = getEvent(idEvent);
         if (eventBase.getState() == StatusEvent.PUBLISHED) {
-            throw new EwmException("Событие уже запущено", "event is published", HttpStatus.CONFLICT);
+            throw new EwmException("Событие уже запущено", "event is published", HttpStatus.BAD_REQUEST);
         }
 
         if (event.getAnnotation() != null) {
@@ -141,12 +143,10 @@ public class ServiceEventImpl implements ServiceEvent {
                 case CANCEL_REVIEW:
                     eventBase.setState(StatusEvent.CANCELED);
                 default:
-                    throw new EwmException("Недопустимое значения статуса события", "Incorrect status event", HttpStatus.CONFLICT);
+                    throw new EwmException("Недопустимое значения статуса события", "Incorrect status event", HttpStatus.BAD_REQUEST);
             }
 
         }
-
-
         Event refEvent = repositoryEvent.saveAndFlush(eventBase);
 
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(refEvent.getId());
@@ -158,14 +158,18 @@ public class ServiceEventImpl implements ServiceEvent {
 
     private Long getCountViews(LocalDateTime start, LocalDateTime end, List<String> events, Boolean unique) {
         ResponseEntity<Object> response = statsClient.getStats(start, end, events, unique);
-        List<Object> listResp = (List<Object>) response.getBody();
 
-        List<StatsDto> statsDtos = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        List<StatsDto> statsDtos = mapper.convertValue(response.getBody(), new TypeReference<List<StatsDto>>() {});
+
+        //List<Object> listResp = (List<Object>) response.getBody();
+
+        /*List<StatsDto> statsDtos = new ArrayList<>();
         if (listResp.size() != 0) {
             statsDtos = listResp.stream()
                     .map(element -> (StatsDto) element)
                     .collect(Collectors.toList());
-        }
+        }*/
         if (statsDtos.size() != 0) {
             if (statsDtos.get(0).getHits() == null) {
                 return 0L;
@@ -279,7 +283,7 @@ public class ServiceEventImpl implements ServiceEvent {
         }
         if (updateEventAdminRequest.getEventDate() != null) {
             if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.CONFLICT);
+                throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.BAD_REQUEST);
             }
             event.setEventDate(updateEventAdminRequest.getEventDate());
         }
@@ -342,9 +346,9 @@ public class ServiceEventImpl implements ServiceEvent {
         statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         List<Event> events;
         if (text != null) {
-            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, start, end, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, StatusEvent.PUBLISHED, start, end, PageRequest.of(from, size)).getContent();
         } else {
-            events = repositoryEvent.findEventForPublic(paid, categories, start, end, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublic(paid, categories, StatusEvent.PUBLISHED, start, end, PageRequest.of(from, size)).getContent();
         }
 
         List<EventShortDto> results = new ArrayList<>();

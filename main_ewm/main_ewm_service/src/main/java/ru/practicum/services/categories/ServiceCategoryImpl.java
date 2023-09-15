@@ -43,7 +43,7 @@ public class ServiceCategoryImpl implements ServiceCategory {
         try {
             return MapperCategory.toDTO(repositoryCategory.saveAndFlush(MapperCategory.toCategory(categoryDto)));
         } catch (RuntimeException e) {
-            throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
+            throw new EwmException("Наименование не уникально", "Category double", HttpStatus.BAD_REQUEST);
         }
     }
 
