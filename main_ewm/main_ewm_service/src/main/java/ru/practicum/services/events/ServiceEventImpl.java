@@ -91,7 +91,7 @@ public class ServiceEventImpl implements ServiceEvent {
             event.setParticipantLimit(0L);
         }
         if (event.getRequestModeration() == null) {
-            event.setRequestModeration(false);
+            event.setRequestModeration(true);
         }
         return MapperEvent.toNewEventFullDto(repositoryEvent.save(event));
     }
@@ -101,7 +101,6 @@ public class ServiceEventImpl implements ServiceEvent {
         log.info("Получение event {}", event);
 
         User user = serviceUser.getById(userId);
-
 
         Event eventBase = getEvent(idEvent);
         if (eventBase.getState() == StatusEvent.PUBLISHED) {
@@ -259,7 +258,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
     //admin
     @Override
-    public List<EventFullDto> getEventForAdmin(List<Long> users, List<String> state, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public List<EventFullDto> getEventForAdmin(List<Long> users, List<StatusEvent> state, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         List<EventFullDto> resultEvents = new ArrayList<>();
         List<Event> events = repositoryEvent.findEventForAdmin(rangeStart, rangeEnd, users, state, categories, PageRequest.of(from, size)).getContent();
         if (events.size() != 0) {
@@ -385,9 +384,9 @@ public class ServiceEventImpl implements ServiceEvent {
     @Override
     public EventFullDto getEventPublicForUserById(Long id, HttpServletRequest request) {
         Event event = getEvent(id);
-        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
+        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
 

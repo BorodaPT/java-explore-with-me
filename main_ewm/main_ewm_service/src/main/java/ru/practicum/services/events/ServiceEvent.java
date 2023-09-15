@@ -5,12 +5,8 @@ import events.dto.EventShortDto;
 import events.dto.NewEventDto;
 import events.dto.ParticipationRequestDto;
 import ru.practicum.services.events.enum_events.SortEvent;
-import ru.practicum.services.events.model.EventRequestStatusUpdateRequest;
-import ru.practicum.services.events.model.EventRequestStatusUpdateResult;
-import ru.practicum.services.events.model.UpdateEventAdminRequest;
-import ru.practicum.services.events.model.UpdateEventUserRequest;
+import ru.practicum.services.events.model.*;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.services.events.model.Event;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -39,7 +35,7 @@ public interface ServiceEvent {
 
     //admin
     List<EventFullDto> getEventForAdmin(List<Long> users,
-                                        List<String> state,
+                                        List<StatusEvent> state,
                                         List<Long> categories,
                                         LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd,

@@ -5,6 +5,7 @@ import categories.dto.NewCategoryDto;
 import compilation.dto.CompilationDto;
 import compilation.dto.NewCompilationDto;
 import events.dto.EventFullDto;
+import ru.practicum.services.events.model.StatusEvent;
 import ru.practicum.services.events.model.UpdateEventAdminRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -57,7 +58,7 @@ public class ControllerAdmin {
     //events
     @GetMapping("/events")
     public List<EventFullDto> findEvents(@RequestParam(name = "users", required = false) List<Long> users,
-                                         @RequestParam(name = "states", required = false) List<String> states,
+                                         @RequestParam(name = "states", required = false) List<StatusEvent> states,
                                          @RequestParam(name = "categories", required = false) List<Long> categories,
                                          @RequestParam(name = "rangeStart") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                          @RequestParam(name = "rangeEnd") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,

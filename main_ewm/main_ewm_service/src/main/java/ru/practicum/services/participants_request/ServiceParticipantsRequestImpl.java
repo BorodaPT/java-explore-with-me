@@ -68,18 +68,19 @@ public class ServiceParticipantsRequestImpl implements ServiceParticipantsReques
             throw new EwmException("Событие не опубликовано", "Event not public", HttpStatus.CONFLICT);
         }
 
+        ParticipationRequest checkPr = repositoryParticipantsRequest.findByEvent_idAndRequester_id(eventId, userId);
+        if (checkPr != null) {
+            throw new EwmException("Заявка уже была офрмлена", "Limit", HttpStatus.CONFLICT);
+        }
+
         if (event.getParticipantLimit() != 0) {
             if (event.getParticipantLimit().equals(countRequestEventConfirmed(eventId))) {
                 throw new EwmException("Свободных мест не осталось", "Limit", HttpStatus.CONFLICT);
             }
         }
 
-        ParticipationRequest checkPr = repositoryParticipantsRequest.findByEvent_idAndRequester_id(eventId, userId);
-        if (checkPr != null) {
-            throw new EwmException("Заявка уже была офрмлена", "Limit", HttpStatus.CONFLICT);
-        }
-
         ParticipationRequest participationRequest;
+
         if (!event.getRequestModeration()) {
             participationRequest = new ParticipationRequest(user, event, StatusUserRequestEvent.CONFIRMED);
         } else {

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.services.events.model.Event;
+import ru.practicum.services.events.model.StatusEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,15 +18,15 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
     Page<Event> findByInitiator_id(Long userId, Pageable pageable);
 
 
-    @Query(value = "select e from Event as e " +
+    @Query(value = "select e from Event e " +
             "where e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "AND (coalesce(:users, null) is null or (e.initiator.id in :users)) " +
             "AND (coalesce(:state, null) is null or (e.state in :state)) " +
-            "AND (coalesce(:categories, null) is null or (e.category in :categories)) ")
+            "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) ")
     Page<Event> findEventForAdmin(LocalDateTime rangeStart,
                                   LocalDateTime rangeEnd,
                                   List<Long> users,
-                                  List<String> state,
+                                  List<StatusEvent> state,
                                   List<Long> categories,
                                   Pageable pageable);
 
