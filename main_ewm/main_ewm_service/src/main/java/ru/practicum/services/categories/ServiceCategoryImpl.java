@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.EwmException;
 import ru.practicum.services.categories.mapper.MapperCategory;
 import ru.practicum.services.categories.model.Category;
+import ru.practicum.services.events.model.Event;
 
 import java.util.List;
 
@@ -43,9 +44,10 @@ public class ServiceCategoryImpl implements ServiceCategory {
             throw new EwmException("Не указано наименование категории", "Category empty", HttpStatus.BAD_REQUEST);
         }
         try {
-            return MapperCategory.toDTO(repositoryCategory.saveAndFlush(MapperCategory.toCategory(categoryDto)));
+            category.setName(categoryDto.getName());
+            return MapperCategory.toDTO(repositoryCategory.save(MapperCategory.toCategory(categoryDto)));
         } catch (RuntimeException e) {
-            throw new EwmException("Наименование не уникально", "Category double", HttpStatus.BAD_REQUEST);
+            throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
     }
 
@@ -53,6 +55,11 @@ public class ServiceCategoryImpl implements ServiceCategory {
     @Override
     public void delete(Long id) {
         try {
+            Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория не найдена", "Category not found", HttpStatus.NOT_FOUND));
+            Category categoryEvent = repositoryCategory.findEventCategory(id);
+            if (categoryEvent != null) {
+                throw new EwmException("У категории есть эвенты", "Category have event", HttpStatus.CONFLICT);
+            }
             repositoryCategory.deleteById(id);
         } catch (RuntimeException e) {
             throw new EwmException("Не удалось удалить категорию", "Cant delete category", HttpStatus.CONFLICT);

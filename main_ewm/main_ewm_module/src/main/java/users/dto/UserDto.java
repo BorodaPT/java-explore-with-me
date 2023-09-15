@@ -21,7 +21,7 @@ public class UserDto {
 
     @NotBlank
     @Email(message = "Неверный формат электронной почты")
-    @Size(min = 6, max = 300, message = "Превышена максимальная длина комментария(200)")
+    @Size(min = 6, max = 254, message = "Превышена максимальная длина комментария(200)")
     private String email;
 
     public UserDto(Long id, String name, String email) {

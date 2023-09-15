@@ -104,7 +104,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
         Event eventBase = getEvent(idEvent);
         if (eventBase.getState() == StatusEvent.PUBLISHED) {
-            throw new EwmException("Событие уже запущено", "event is published", HttpStatus.BAD_REQUEST);
+            throw new EwmException("Событие уже запущено", "event is published", HttpStatus.CONFLICT);
         }
 
         if (event.getAnnotation() != null) {
@@ -189,7 +189,7 @@ public class ServiceEventImpl implements ServiceEvent {
         log.info("Получение event {}", statusUpdateRequest);
         Event eventBase = getEvent(idEvent);
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(eventBase.getId());
-        if (eventBase.getParticipantLimit() != 0 && !eventBase.getRequestModeration()) {
+        if (eventBase.getParticipantLimit() != 0) {
             if (eventBase.getParticipantLimit().equals(cntRequest)) {
                 throw new EwmException("Лимит одобренных заявок", "The participant limit has been reached", HttpStatus.CONFLICT);
             }
@@ -257,7 +257,7 @@ public class ServiceEventImpl implements ServiceEvent {
         return serviceParticipantsRequest.getRequestsFromEvent(eventId);
     }
 
-    //admin
+    //ADMIN
     @Override
     public List<EventFullDto> getEventForAdmin(List<Long> users, List<StatusEvent> state, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         List<EventFullDto> resultEvents = new ArrayList<>();
@@ -384,10 +384,13 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventFullDto getEventPublicForUserById(Long id, HttpServletRequest request) {
-        Event event = getEvent(id);
+        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
+        Event event = repositoryEvent.findById(id).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
+        if (event.getState() != StatusEvent.PUBLISHED) {
+            throw new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND);
+        }
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
-        statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
 
@@ -411,4 +414,5 @@ public class ServiceEventImpl implements ServiceEvent {
         }
         return resultEvents;
     }
+
 }

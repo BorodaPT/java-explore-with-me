@@ -60,8 +60,8 @@ public class ControllerAdmin {
     public List<EventFullDto> findEvents(@RequestParam(name = "users", required = false) List<Long> users,
                                          @RequestParam(name = "states", required = false) List<StatusEvent> states,
                                          @RequestParam(name = "categories", required = false) List<Long> categories,
-                                         @RequestParam(name = "rangeStart") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                         @RequestParam(name = "rangeEnd") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                         @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                         @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                          @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
         return serviceEvent.getEventForAdmin(users, states, categories, rangeStart, rangeEnd, start, size);

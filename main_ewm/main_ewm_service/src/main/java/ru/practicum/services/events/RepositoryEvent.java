@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 public interface RepositoryEvent extends JpaRepository<Event, Long> {
 
+
     @Query(value = "select ev.* from events as ev where initiator_id = ?1 ", nativeQuery = true)
     Page<Event> findByInitiator_id(Long userId, Pageable pageable);
 

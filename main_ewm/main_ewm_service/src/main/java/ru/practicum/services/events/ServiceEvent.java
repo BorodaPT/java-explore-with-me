@@ -64,4 +64,5 @@ public interface ServiceEvent {
     List<Event> getListEventForCompilation(List<Long> events);
 
     List<EventShortDto> getListEventDtoForCompilation(List<Event> events);
+
 }

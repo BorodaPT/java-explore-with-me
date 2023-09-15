@@ -15,4 +15,10 @@ public interface RepositoryCategory extends JpaRepository<Category, Long> {
 
     Boolean existsByName(String name);
 
+    @Query(value = "select c.* from categories as c " +
+            "join events e on e.category_id = c.id " +
+            "where c.id = ?1 " +
+            "limit 1", nativeQuery = true)
+    Category findEventCategory(Long idCat);
+
 }
