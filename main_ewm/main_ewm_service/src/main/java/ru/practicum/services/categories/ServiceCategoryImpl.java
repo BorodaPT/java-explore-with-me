@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.EwmException;
 import ru.practicum.services.categories.mapper.MapperCategory;
 import ru.practicum.services.categories.model.Category;
-import ru.practicum.services.events.model.Event;
 
 import java.util.List;
 
