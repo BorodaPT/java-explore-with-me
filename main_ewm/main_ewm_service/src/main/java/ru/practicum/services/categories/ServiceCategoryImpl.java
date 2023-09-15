@@ -42,12 +42,12 @@ public class ServiceCategoryImpl implements ServiceCategory {
         if (categoryDto.getName() == null || categoryDto.getName().isBlank()) {
             throw new EwmException("Не указано наименование категории", "Category empty", HttpStatus.BAD_REQUEST);
         }
-        try {
-            category.setName(categoryDto.getName());
-            return MapperCategory.toDTO(repositoryCategory.save(category));
-        } catch (RuntimeException e) {
+        Category categoryName = repositoryCategory.findByNameAndNotId(category.getName(), id);
+        if (categoryName != null) {
             throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
+        category.setName(categoryDto.getName());
+        return MapperCategory.toDTO(repositoryCategory.save(category));
     }
 
     @Transactional

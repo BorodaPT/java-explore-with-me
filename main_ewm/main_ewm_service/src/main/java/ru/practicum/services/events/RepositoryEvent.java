@@ -20,16 +20,25 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
 
 
     @Query(value = "select e from Event e " +
+            "where (coalesce(:users, null) is null or (e.initiator.id in :users)) " +
+            "AND (coalesce(:state, null) is null or (e.state in :state)) " +
+            "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) ")
+    Page<Event> findEventForAdminWithoutDate(List<Long> users,
+                                             List<StatusEvent> state,
+                                             List<Long> categories,
+                                             Pageable pageable);
+
+    @Query(value = "select e from Event e " +
             "where e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "AND (coalesce(:users, null) is null or (e.initiator.id in :users)) " +
             "AND (coalesce(:state, null) is null or (e.state in :state)) " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) ")
-    Page<Event> findEventForAdmin(LocalDateTime rangeStart,
-                                  LocalDateTime rangeEnd,
-                                  List<Long> users,
-                                  List<StatusEvent> state,
-                                  List<Long> categories,
-                                  Pageable pageable);
+    Page<Event> findEventForAdminWithDate(LocalDateTime rangeStart,
+                                          LocalDateTime rangeEnd,
+                                          List<Long> users,
+                                          List<StatusEvent> state,
+                                          List<Long> categories,
+                                          Pageable pageable);
 
     @Query(value = "SELECT e " +
             "FROM Event e " +

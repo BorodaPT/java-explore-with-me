@@ -7,8 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.services.categories.model.Category;
 
+
 @Repository
 public interface RepositoryCategory extends JpaRepository<Category, Long> {
+
+    @Query(value = "select c.* from categories c " +
+                   "where c.name = ?1 AND c.id <> ?2", nativeQuery = true)
+    Category findByNameAndNotId(String name, Long id);
 
     @Query(value = "select c from Category c")
     Page<Category> findAllCat(Pageable pageable);
