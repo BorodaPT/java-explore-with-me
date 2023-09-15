@@ -14,6 +14,8 @@ import events.model.EventRequestStatusUpdateResult;
 import events.model.UpdateEventAdminRequest;
 import events.model.UpdateEventUserRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ServiceEventImpl implements ServiceEvent {
+
+    private final Logger log = LoggerFactory.getLogger(ServiceEventImpl.class);
 
     private final RepositoryEvent repositoryEvent;
 
@@ -91,12 +95,11 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventFullDto editEvent(Long userId, Long idEvent, UpdateEventUserRequest event) {
-        User user = serviceUser.getById(userId);
-        Category category;
+        log.info("Получение event {}", event);
 
-        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.BAD_REQUEST);
-        }
+        User user = serviceUser.getById(userId);
+
+
         Event eventBase = getEvent(idEvent);
         if (eventBase.getState() == StatusEvent.PUBLISHED) {
             throw new EwmException("Событие уже запущено", "event is published", HttpStatus.BAD_REQUEST);
@@ -106,20 +109,26 @@ public class ServiceEventImpl implements ServiceEvent {
             eventBase.setAnnotation(event.getAnnotation());
         }
         if (event.getCategory() != null) {
-            category = serviceCategory.getById(event.getCategory().getId());
+            Category category = serviceCategory.getById(event.getCategory().getId());
             eventBase.setCategory(category);
         }
         if (event.getEventDate() != null) {
+            if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+                throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.BAD_REQUEST);
+            }
             eventBase.setEventDate(event.getEventDate());
         }
         if (event.getDescription() != null) {
             eventBase.setDescription(event.getDescription());
         }
-        if (event.getLocationEvent().getLat() != null) {
-            eventBase.setLocLat(event.getLocationEvent().getLat());
-        }
-        if (event.getLocationEvent().getLon() != null) {
-            eventBase.setLocLon(event.getLocationEvent().getLon());
+
+        if (event.getLocationEvent() != null) {
+            if (event.getLocationEvent().getLat() != null) {
+                eventBase.setLocLat(event.getLocationEvent().getLat());
+            }
+            if (event.getLocationEvent().getLon() != null) {
+                eventBase.setLocLon(event.getLocationEvent().getLon());
+            }
         }
         if (event.getTitle() != null) {
             eventBase.setTitle(event.getTitle());
@@ -161,14 +170,6 @@ public class ServiceEventImpl implements ServiceEvent {
         ObjectMapper mapper = new ObjectMapper();
         List<StatsDto> statsDtos = mapper.convertValue(response.getBody(), new TypeReference<List<StatsDto>>() {});
 
-        //List<Object> listResp = (List<Object>) response.getBody();
-
-        /*List<StatsDto> statsDtos = new ArrayList<>();
-        if (listResp.size() != 0) {
-            statsDtos = listResp.stream()
-                    .map(element -> (StatsDto) element)
-                    .collect(Collectors.toList());
-        }*/
         if (statsDtos.size() != 0) {
             if (statsDtos.get(0).getHits() == null) {
                 return 0L;
@@ -182,6 +183,7 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventRequestStatusUpdateResult editStatus(Long userId, Long idEvent, EventRequestStatusUpdateRequest statusUpdateRequest) {
+        log.info("Получение event {}", statusUpdateRequest);
         Event eventBase = getEvent(idEvent);
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(eventBase.getId());
         if (eventBase.getParticipantLimit() != 0 && !eventBase.getRequestModeration()) {
@@ -269,19 +271,20 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventFullDto editEventAdmin(Long id, UpdateEventAdminRequest updateEventAdminRequest) {
+        log.info("Получение фильма {}", updateEventAdminRequest);
         Event event = getEvent(id);
-        if (updateEventAdminRequest.getAnnotation() != null && !updateEventAdminRequest.getAnnotation().equals("")) {
+        if (updateEventAdminRequest.getAnnotation() != null && !updateEventAdminRequest.getAnnotation().isBlank()) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
         if (updateEventAdminRequest.getCategory() != null) {
             Category category = serviceCategory.getById(updateEventAdminRequest.getCategory());
             event.setCategory(category);
         }
-        if (updateEventAdminRequest.getDescription() != null && !updateEventAdminRequest.getDescription().equals("")) {
+        if (updateEventAdminRequest.getDescription() != null && !updateEventAdminRequest.getDescription().isBlank()) {
             event.setDescription(updateEventAdminRequest.getDescription());
         }
         if (updateEventAdminRequest.getEventDate() != null) {
-            if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            if (updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new EwmException("Недопустимое значения параметров события", "eventDate isBefore min default value", HttpStatus.BAD_REQUEST);
             }
             event.setEventDate(updateEventAdminRequest.getEventDate());
@@ -315,10 +318,10 @@ public class ServiceEventImpl implements ServiceEvent {
                 }
             }
         }
-        if (updateEventAdminRequest.getTitle() != null && !updateEventAdminRequest.getTitle().equals("")) {
+        if (updateEventAdminRequest.getTitle() != null && !updateEventAdminRequest.getTitle().isBlank()) {
             event.setTitle(updateEventAdminRequest.getTitle());
         }
-        Event refEvent = repositoryEvent.saveAndFlush(event);
+        Event refEvent = repositoryEvent.save(event);
         Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(refEvent, cntViews, cntRequest);

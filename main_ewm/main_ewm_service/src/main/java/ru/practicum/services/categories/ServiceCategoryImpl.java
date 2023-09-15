@@ -37,7 +37,7 @@ public class ServiceCategoryImpl implements ServiceCategory {
     @Override
     public CategoryDto edit(Long id, NewCategoryDto categoryDto) {
         Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория для изменения не найдена", "Category not found", HttpStatus.NOT_FOUND));
-        if (categoryDto.getName() == null || categoryDto.getName().equals("")) {
+        if (categoryDto.getName() == null || categoryDto.getName().isBlank()) {
             throw new EwmException("Не указано наименование категории", "Category empty", HttpStatus.BAD_REQUEST);
         }
         try {
