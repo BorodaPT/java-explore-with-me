@@ -89,7 +89,7 @@ public class ControllerAdmin {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/users/{userId}")
-    public void deleteUser(@PathVariable("eventId") Long id) {
+    public void deleteUser(@PathVariable("userId") Long id) {
         serviceUser.delete(id);
     }
 
@@ -101,14 +101,14 @@ public class ControllerAdmin {
     }
 
     @PatchMapping("compilations/{compId}")
-    public CompilationDto editCompilations(@PathVariable("eventId") Long id,
+    public CompilationDto editCompilations(@PathVariable("compId") Long id,
                                            @Valid @RequestBody NewCompilationDto newCompilationDto) {
         return serviceCompilation.edit(id, newCompilationDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("compilations/{compId}")
-    public void deleteCompilations(@PathVariable("eventId") Long id) {
+    public void deleteCompilations(@PathVariable("compId") Long id) {
         serviceCompilation.delete(id);
     }
 }

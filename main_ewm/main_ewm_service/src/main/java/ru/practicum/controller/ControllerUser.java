@@ -40,7 +40,7 @@ public class ControllerUser {
     public EventFullDto editEvent(@PathVariable("userId") Long idUser,
                                   @PathVariable("eventId") Long idEvent,
                                   @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
-        return serviceEvent.editEvent(idEvent, idUser, updateEventUserRequest);
+        return serviceEvent.editEvent(idUser, idEvent, updateEventUserRequest);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests")
