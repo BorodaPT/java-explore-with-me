@@ -52,7 +52,9 @@ public class ServiceCompilationImpl implements ServiceCompilation {
         Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
 
         List<Event> events = serviceEvent.getListEventForCompilation(newCompilationDto.getEvents());
-        compilation.setEvents(events);
+        if (events.size() != 0) {
+            compilation.setEvents(events);
+        }
         if (newCompilationDto.getTitle() != null) {
             compilation.setTitle(newCompilationDto.getTitle());
         }
