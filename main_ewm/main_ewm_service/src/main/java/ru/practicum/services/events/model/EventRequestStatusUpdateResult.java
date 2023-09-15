@@ -1,4 +1,4 @@
-package events.model;
+package ru.practicum.services.events.model;
 
 import events.dto.ParticipationRequestDto;
 import lombok.AllArgsConstructor;

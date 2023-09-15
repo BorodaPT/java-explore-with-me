@@ -1,8 +1,8 @@
 package ru.practicum.services.participants_request;
 
 import events.dto.ParticipationRequestDto;
-import events.enum_events.StatusEvent;
-import events.enum_events.StatusUserRequestEvent;
+import ru.practicum.services.events.model.StatusEvent;
+import ru.practicum.services.events.enum_events.StatusUserRequestEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -8,11 +8,10 @@ import events.dto.EventFullDto;
 import events.dto.EventShortDto;
 import events.dto.NewEventDto;
 import events.dto.ParticipationRequestDto;
-import events.enum_events.*;
-import events.model.EventRequestStatusUpdateRequest;
-import events.model.EventRequestStatusUpdateResult;
-import events.model.UpdateEventAdminRequest;
-import events.model.UpdateEventUserRequest;
+import ru.practicum.services.events.model.EventRequestStatusUpdateRequest;
+import ru.practicum.services.events.model.EventRequestStatusUpdateResult;
+import ru.practicum.services.events.model.UpdateEventAdminRequest;
+import ru.practicum.services.events.model.UpdateEventUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.EwmException;
 import ru.practicum.services.categories.ServiceCategory;
 import ru.practicum.services.categories.model.Category;
+import ru.practicum.services.events.enum_events.SortEvent;
+import ru.practicum.services.events.enum_events.StatusAction;
+import ru.practicum.services.events.model.StatusEvent;
+import ru.practicum.services.events.enum_events.StatusUserRequestEvent;
 import ru.practicum.services.events.mapper.MapperEvent;
 import ru.practicum.services.events.model.Event;
 import ru.practicum.services.participants_request.ServiceParticipantsRequest;
@@ -348,9 +351,9 @@ public class ServiceEventImpl implements ServiceEvent {
         statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         List<Event> events;
         if (text != null) {
-            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, StatusEvent.PUBLISHED, start, end, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, start, end, PageRequest.of(from, size)).getContent();
         } else {
-            events = repositoryEvent.findEventForPublic(paid, categories, StatusEvent.PUBLISHED, start, end, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublic(paid, categories, start, end, PageRequest.of(from, size)).getContent();
         }
 
         List<EventShortDto> results = new ArrayList<>();

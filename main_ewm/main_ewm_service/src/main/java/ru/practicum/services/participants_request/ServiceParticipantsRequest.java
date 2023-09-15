@@ -1,7 +1,7 @@
 package ru.practicum.services.participants_request;
 
 import events.dto.ParticipationRequestDto;
-import events.enum_events.StatusUserRequestEvent;
+import ru.practicum.services.events.enum_events.StatusUserRequestEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.services.participants_request.model.ParticipationRequest;
 

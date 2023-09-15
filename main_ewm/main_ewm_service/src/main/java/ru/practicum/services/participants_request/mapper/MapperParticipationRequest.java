@@ -14,7 +14,7 @@ public class MapperParticipationRequest {
                 request.getEvent().getId(),
                 request.getId(),
                 request.getRequester().getId(),
-                request.getStatus());
+                request.getStatus().toString());
     }
 
     public static List<ParticipationRequestDto> toDto(Iterable<ParticipationRequest> requests) {

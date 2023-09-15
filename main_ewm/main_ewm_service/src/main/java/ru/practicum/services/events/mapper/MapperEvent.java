@@ -3,7 +3,7 @@ package ru.practicum.services.events.mapper;
 import events.dto.EventFullDto;
 import events.dto.EventShortDto;
 import events.dto.NewEventDto;
-import events.enum_events.StatusEvent;
+import ru.practicum.services.events.model.StatusEvent;
 import events.model.LocationEvent;
 import ru.practicum.services.categories.mapper.MapperCategory;
 import ru.practicum.services.categories.model.Category;
@@ -50,7 +50,7 @@ public class MapperEvent {
                 event.getParticipantLimit(),
                 event.getPublishedOn(),
                 event.getRequestModeration(),
-                event.getState(),
+                event.getState().toString(),
                 event.getTitle(),
                 0L);
     }
@@ -70,7 +70,7 @@ public class MapperEvent {
                 event.getParticipantLimit(),
                 event.getPublishedOn(),
                 event.getRequestModeration(),
-                event.getState(),
+                event.getState().toString(),
                 event.getTitle(),
                 views);
     }

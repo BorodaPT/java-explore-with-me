@@ -1,10 +1,10 @@
-package events.model;
+package ru.practicum.services.events.model;
 
-import events.enum_events.StatusUserRequestEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.services.events.enum_events.StatusUserRequestEvent;
 
 import java.util.List;
 

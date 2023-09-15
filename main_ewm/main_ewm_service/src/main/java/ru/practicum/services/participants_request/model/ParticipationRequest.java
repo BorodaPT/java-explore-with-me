@@ -1,6 +1,6 @@
 package ru.practicum.services.participants_request.model;
 
-import events.enum_events.StatusUserRequestEvent;
+import ru.practicum.services.events.enum_events.StatusUserRequestEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

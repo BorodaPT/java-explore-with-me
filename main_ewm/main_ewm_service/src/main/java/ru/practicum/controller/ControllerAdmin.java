@@ -5,7 +5,7 @@ import categories.dto.NewCategoryDto;
 import compilation.dto.CompilationDto;
 import compilation.dto.NewCompilationDto;
 import events.dto.EventFullDto;
-import events.model.UpdateEventAdminRequest;
+import ru.practicum.services.events.model.UpdateEventAdminRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

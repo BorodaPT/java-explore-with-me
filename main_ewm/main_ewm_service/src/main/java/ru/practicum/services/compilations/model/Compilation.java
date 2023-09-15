@@ -27,8 +27,8 @@ public class Compilation {
 
     @ManyToMany
     @JoinTable(name = "compilations_events",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "compilation_id"))
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> events;
 
     public Compilation(String title, Boolean pinned, List<Event> events) {

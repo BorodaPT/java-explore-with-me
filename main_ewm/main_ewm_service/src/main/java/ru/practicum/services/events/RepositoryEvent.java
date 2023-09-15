@@ -1,12 +1,13 @@
 package ru.practicum.services.events;
 
-import events.enum_events.StatusEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.services.events.model.Event;
+import ru.practicum.services.events.model.StatusEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,18 +33,18 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e " +
             "FROM Event e " +
-            "WHERE e.state = :statusEvent AND e.paid = :paid " +
+            "WHERE e.state = 'PUBLISHED'  AND e.paid = :paid " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
             "AND e.eventDate between :rangeStart AND :rangeEnd " +
             "order by e.eventDate")
-    Page<Event> findEventForPublic(Boolean paid, List<Long> categories, StatusEvent statusEvent, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    Page<Event> findEventForPublic(Boolean paid, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
     @Query(value = "SELECT e " +
             "FROM Event e " +
-            "WHERE e.state = :statusEvent AND e.paid = :paid " +
+            "WHERE e.state = 'PUBLISHED' AND e.paid = :paid " +
             "AND ((upper(e.annotation) like upper(concat('%', :text, '%'))) OR (upper(e.description) like upper(concat('%', :text, '%')))) " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
             "AND e.eventDate between :rangeStart AND :rangeEnd " +
             "order by e.eventDate")
-    Page<Event> findEventForPublicWithText(Boolean paid, String text, List<Long> categories, StatusEvent statusEvent, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    Page<Event> findEventForPublicWithText(Boolean paid, String text, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

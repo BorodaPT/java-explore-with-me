@@ -4,11 +4,11 @@ import events.dto.EventFullDto;
 import events.dto.EventShortDto;
 import events.dto.NewEventDto;
 import events.dto.ParticipationRequestDto;
-import events.enum_events.SortEvent;
-import events.model.EventRequestStatusUpdateRequest;
-import events.model.EventRequestStatusUpdateResult;
-import events.model.UpdateEventAdminRequest;
-import events.model.UpdateEventUserRequest;
+import ru.practicum.services.events.enum_events.SortEvent;
+import ru.practicum.services.events.model.EventRequestStatusUpdateRequest;
+import ru.practicum.services.events.model.EventRequestStatusUpdateResult;
+import ru.practicum.services.events.model.UpdateEventAdminRequest;
+import ru.practicum.services.events.model.UpdateEventUserRequest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.services.events.model.Event;
 

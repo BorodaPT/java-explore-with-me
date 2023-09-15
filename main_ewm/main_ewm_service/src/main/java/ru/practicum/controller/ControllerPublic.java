@@ -4,7 +4,7 @@ import categories.dto.CategoryDto;
 import compilation.dto.CompilationDto;
 import events.dto.EventFullDto;
 import events.dto.EventShortDto;
-import events.enum_events.SortEvent;
+import ru.practicum.services.events.enum_events.SortEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;

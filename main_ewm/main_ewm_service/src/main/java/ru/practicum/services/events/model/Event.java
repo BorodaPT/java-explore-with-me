@@ -1,16 +1,16 @@
 package ru.practicum.services.events.model;
 
-import events.enum_events.StatusEvent;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import ru.practicum.services.compilations.model.Compilation;
 import ru.practicum.services.categories.model.Category;
 import ru.practicum.services.users.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -65,6 +65,12 @@ public class Event {
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEvent state;
+
+    @ManyToMany
+    @JoinTable(name = "compilations_events",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "compilation_id"))
+    private List<Compilation> compilationList;
 
     public Event(String title, String annotation, String description, Category category, User initiator,
                  LocalDateTime createdOn, LocalDateTime eventDate, LocalDateTime publishedOn,

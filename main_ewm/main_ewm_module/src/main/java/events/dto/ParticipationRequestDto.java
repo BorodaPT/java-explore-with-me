@@ -1,7 +1,6 @@
 package events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import events.enum_events.StatusUserRequestEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +23,5 @@ public class ParticipationRequestDto {
 
     private Long requester;
 
-    private StatusUserRequestEvent status;
+    private String status;
 }

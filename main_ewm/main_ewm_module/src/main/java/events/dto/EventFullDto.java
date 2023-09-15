@@ -3,7 +3,6 @@ package events.dto;
 import categories.dto.CategoryDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import events.enum_events.StatusEvent;
 import events.model.LocationEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,7 +49,7 @@ public class EventFullDto {
     @JsonProperty(value = "requestModeration")
     private Boolean requestModeration;
 
-    private StatusEvent state;
+    private String state;
 
     private String title;
 
