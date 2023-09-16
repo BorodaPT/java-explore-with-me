@@ -262,10 +262,36 @@ public class ServiceEventImpl implements ServiceEvent {
     public List<EventFullDto> getEventForAdmin(List<Long> users, List<StatusEvent> state, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         List<EventFullDto> resultEvents = new ArrayList<>();
         List<Event> events = new ArrayList<>();
+        List<Long> queryUsers = new ArrayList<>();
+        if (users != null) {
+            if (users.get(0) != 0L) {
+                queryUsers = users;
+            }
+        }
+
+        List<Long> queryCategories = new ArrayList<>();
+        if (categories != null) {
+            if (categories.get(0) != 0L) {
+                queryCategories = categories;
+            }
+        }
+
         if (rangeStart == null && rangeEnd == null) {
-            events = repositoryEvent.findEventForAdminWithoutDate(users, state, categories, PageRequest.of(from / size, size)).getContent();
+            events = repositoryEvent.findEventForAdminWithoutDate(
+                            (queryUsers.size() == 0) ? null : queryUsers,
+                            state,
+                            (queryCategories.size() == 0) ? null : queryCategories,
+                            PageRequest.of(from / size, size))
+                            .getContent();
         } else {
-            events = repositoryEvent.findEventForAdminWithDate(rangeStart, rangeEnd, users, state, categories, PageRequest.of(from / size, size)).getContent();
+            events = repositoryEvent.findEventForAdminWithDate(
+                            rangeStart,
+                            rangeEnd,
+                            (queryUsers.size() == 0) ? null : queryUsers,
+                            state,
+                            (queryCategories.size() == 0) ? null : queryCategories,
+                            PageRequest.of(from / size, size))
+                            .getContent();
         }
         if (events.size() != 0) {
             for (Event event : events) {

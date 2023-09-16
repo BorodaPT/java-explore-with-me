@@ -43,7 +43,7 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e " +
             "FROM Event e " +
-            "WHERE e.state = 'PUBLISHED'  AND e.paid = :paid " +
+            "WHERE e.state = 'PUBLISHED'  AND e.paid = COALESCE(:paid, e.paid) " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
             "AND e.eventDate >= COALESCE(:rangeStart, e.eventDate) " +
             "AND e.eventDate <= COALESCE(:rangeEnd, e.eventDate) " +
@@ -52,7 +52,7 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e " +
             "FROM Event e " +
-            "WHERE e.state = 'PUBLISHED' AND e.paid = :paid " +
+            "WHERE e.state = 'PUBLISHED' AND e.paid = COALESCE(:paid, e.paid) " +
             "AND ((upper(e.annotation) like upper(concat('%', :text, '%'))) OR (upper(e.description) like upper(concat('%', :text, '%')))) " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
             "AND e.eventDate >= COALESCE(:rangeStart, e.eventDate) " +

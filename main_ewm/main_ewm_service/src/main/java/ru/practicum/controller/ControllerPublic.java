@@ -33,7 +33,7 @@ public class ControllerPublic {
 
     //Compilation
     @GetMapping("/compilations")
-    public List<CompilationDto> findCompilation(@RequestParam(name = "pinned", required = false, defaultValue = "true") Boolean pinned,
+    public List<CompilationDto> findCompilation(@RequestParam(name = "pinned", required = false) Boolean pinned,
                                                 @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                                 @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
         return serviceCompilation.getCompilations(pinned, start, size);
@@ -60,7 +60,7 @@ public class ControllerPublic {
     @GetMapping("/events")
     public List<EventShortDto> findEvents(@RequestParam(name = "text", required = false) String text,
                                           @RequestParam(name = "categories", required = false) List<Long> categories,
-                                          @RequestParam(name = "paid", required = false, defaultValue = "false") Boolean isPaid,
+                                          @RequestParam(name = "paid", required = false) Boolean isPaid,
                                           @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                           @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                           @RequestParam(name = "onlyAvailable", required = false, defaultValue = "false") Boolean isOnlyAvailable,

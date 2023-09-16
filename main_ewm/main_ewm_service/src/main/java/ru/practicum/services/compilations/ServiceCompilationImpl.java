@@ -73,7 +73,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
     //public
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
-        List<Compilation> compilations = repositoryCompilation.findByPinned(pinned, PageRequest.of(from / size, size));
+        List<Compilation> compilations = (pinned == null) ? repositoryCompilation.findAll(PageRequest.of(from / size, size)).getContent() : repositoryCompilation.findAllByPinned(pinned, PageRequest.of(from / size, size));
         List<CompilationDto> results = new ArrayList<>();
         if (compilations.size() != 0) {
             for (Compilation compilation : compilations) {
