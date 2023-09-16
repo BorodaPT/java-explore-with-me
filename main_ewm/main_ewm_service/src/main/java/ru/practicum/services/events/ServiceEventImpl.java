@@ -355,9 +355,22 @@ public class ServiceEventImpl implements ServiceEvent {
         statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         List<Event> events;
         if (text != null) {
-            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, rangeStart, rangeEnd, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublicWithText(
+                    paid,
+                    text,
+                    categories,
+                    (rangeStart == null) ? LocalDateTime.now().withNano(0) : rangeStart,
+                    rangeEnd,
+                    PageRequest.of(from, size))
+                    .getContent();
         } else {
-            events = repositoryEvent.findEventForPublic(paid, categories, rangeStart, rangeEnd, PageRequest.of(from / size, size)).getContent();
+            events = repositoryEvent.findEventForPublic(
+                    paid,
+                    categories,
+                    (rangeStart == null) ? LocalDateTime.now().withNano(0) : rangeStart,
+                    rangeEnd,
+                    PageRequest.of(from / size, size))
+                    .getContent();
         }
 
         List<EventShortDto> results = new ArrayList<>();
@@ -413,8 +426,10 @@ public class ServiceEventImpl implements ServiceEvent {
     @Override
     public List<Event> getListEventForCompilation(List<Long> events) {
         List<Event> resultEvents = new ArrayList<>();
-        for (Long eventId : events) {
-            resultEvents.add(getEvent(eventId));
+        if (events != null) {
+            for (Long eventId : events) {
+                resultEvents.add(getEvent(eventId));
+            }
         }
         return resultEvents;
     }

@@ -28,7 +28,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
     @Transactional
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
-        if (newCompilationDto.getTitle() == null) {
+        if (newCompilationDto.getTitle() == null || newCompilationDto.getTitle().isBlank()) {
             throw new EwmException("Не заполенно поле Title", "Title not found", HttpStatus.BAD_REQUEST);
         }
 
@@ -51,7 +51,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
         if (events.size() != 0) {
             compilation.setEvents(events);
         }
-        if (newCompilationDto.getTitle() != null) {
+        if (newCompilationDto.getTitle() != null && !newCompilationDto.getTitle().isBlank()) {
             compilation.setTitle(newCompilationDto.getTitle());
         }
         if (newCompilationDto.getPinned() != null) {
@@ -86,6 +86,7 @@ public class ServiceCompilationImpl implements ServiceCompilation {
     @Override
     public CompilationDto getCompilationsById(Long compId) {
         Compilation compilation = repositoryCompilation.findById(compId).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
+
         return MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(compilation.getEvents()));
     }
 }
