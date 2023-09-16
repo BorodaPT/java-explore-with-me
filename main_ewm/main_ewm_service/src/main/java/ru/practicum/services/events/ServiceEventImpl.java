@@ -337,28 +337,27 @@ public class ServiceEventImpl implements ServiceEvent {
 
     //public
     @Override
-    public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
-                                               LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
-                                               SortEvent sort, Integer from, Integer size, HttpServletRequest request) {
-        LocalDateTime start;
-        LocalDateTime end;
+    public List<EventShortDto> getEventsPublic(String text,
+                                               List<Long> categories,
+                                               Boolean paid,
+                                               LocalDateTime rangeStart,
+                                               LocalDateTime rangeEnd,
+                                               Boolean onlyAvailable,
+                                               SortEvent sort,
+                                               Integer from,
+                                               Integer size,
+                                               HttpServletRequest request) {
         if (rangeStart != null && rangeEnd != null) {
             if (rangeStart.isAfter(rangeEnd)) {
                 throw new EwmException("Дата начала больше даты окончания", "Дата начала больше даты окончания", HttpStatus.BAD_REQUEST);
-            } else {
-                start = rangeStart;
-                end = rangeEnd;
             }
-        } else {
-            start = LocalDateTime.now().plusSeconds(1);
-            end = LocalDateTime.now().plusYears(2);
         }
         statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         List<Event> events;
         if (text != null) {
-            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, start, end, PageRequest.of(from, size)).getContent();
+            events = repositoryEvent.findEventForPublicWithText(paid, text, categories, rangeStart, rangeEnd, PageRequest.of(from, size)).getContent();
         } else {
-            events = repositoryEvent.findEventForPublic(paid, categories, start, end, PageRequest.of(from / size, size)).getContent();
+            events = repositoryEvent.findEventForPublic(paid, categories, rangeStart, rangeEnd, PageRequest.of(from / size, size)).getContent();
         }
 
         List<EventShortDto> results = new ArrayList<>();

@@ -36,10 +36,6 @@ public class ServiceCompilationImpl implements ServiceCompilation {
             newCompilationDto.setPinned(false);
         }
 
-        if (newCompilationDto.getEvents() == null) {
-            throw new EwmException("Не заполенно поле Events", "Events not found", HttpStatus.BAD_REQUEST);
-        }
-
         List<Event> events = serviceEvent.getListEventForCompilation(newCompilationDto.getEvents());
         Compilation compilation = MapperCompilation.toCompilation(newCompilationDto, events);
         repositoryCompilation.save(compilation);

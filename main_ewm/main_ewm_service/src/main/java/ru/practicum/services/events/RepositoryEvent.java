@@ -29,10 +29,11 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
                                              Pageable pageable);
 
     @Query(value = "select e from Event e " +
-            "where e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
-            "AND (coalesce(:users, null) is null or (e.initiator.id in :users)) " +
+            "where (coalesce(:users, null) is null or (e.initiator.id in :users)) " +
             "AND (coalesce(:state, null) is null or (e.state in :state)) " +
-            "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) ")
+            "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
+            "AND e.eventDate >= COALESCE(:rangeStart, e.eventDate) " +
+            "AND e.eventDate <= COALESCE(:rangeEnd, e.eventDate) ")
     Page<Event> findEventForAdminWithDate(LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd,
                                           List<Long> users,
@@ -44,7 +45,8 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
             "FROM Event e " +
             "WHERE e.state = 'PUBLISHED'  AND e.paid = :paid " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
-            "AND e.eventDate between :rangeStart AND :rangeEnd " +
+            "AND e.eventDate >= COALESCE(:rangeStart, e.eventDate) " +
+            "AND e.eventDate <= COALESCE(:rangeEnd, e.eventDate) " +
             "order by e.eventDate")
     Page<Event> findEventForPublic(Boolean paid, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
@@ -53,7 +55,8 @@ public interface RepositoryEvent extends JpaRepository<Event, Long> {
             "WHERE e.state = 'PUBLISHED' AND e.paid = :paid " +
             "AND ((upper(e.annotation) like upper(concat('%', :text, '%'))) OR (upper(e.description) like upper(concat('%', :text, '%')))) " +
             "AND (coalesce(:categories, null) is null or (e.category.id in :categories)) " +
-            "AND e.eventDate between :rangeStart AND :rangeEnd " +
+            "AND e.eventDate >= COALESCE(:rangeStart, e.eventDate) " +
+            "AND e.eventDate <= COALESCE(:rangeEnd, e.eventDate) " +
             "order by e.eventDate")
     Page<Event> findEventForPublicWithText(Boolean paid, String text, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }
