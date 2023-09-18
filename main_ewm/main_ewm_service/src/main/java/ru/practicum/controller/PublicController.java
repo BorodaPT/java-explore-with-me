@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Validated
-public class ControllerPublic {
+public class PublicController {
 
     private final ServiceCompilation serviceCompilation;
 

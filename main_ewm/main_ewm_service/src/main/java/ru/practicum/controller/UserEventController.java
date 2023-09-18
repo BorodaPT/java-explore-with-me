@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @Validated
-public class ControllerUser {
+public class UserEventController {
 
     private final ServiceEvent serviceEvent;
 

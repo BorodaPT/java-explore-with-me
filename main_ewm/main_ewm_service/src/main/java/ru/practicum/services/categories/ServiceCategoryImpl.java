@@ -23,25 +23,19 @@ public class ServiceCategoryImpl implements ServiceCategory {
     @Transactional
     @Override
     public CategoryDto create(NewCategoryDto categoryDto) {
-        if (categoryDto.getName() == null) {
-            throw new EwmException("Некорректное заполенние параметров катагории", "Category bad field", HttpStatus.NOT_FOUND);
-        }
 
         if (repositoryCategory.existsByName(categoryDto.getName())) {
             throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
 
         return MapperCategory.toDTO(repositoryCategory.save(MapperCategory.toCategory(categoryDto)));
-
     }
 
     @Transactional
     @Override
     public CategoryDto edit(Long id, NewCategoryDto categoryDto) {
         Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория для изменения не найдена", "Category not found", HttpStatus.NOT_FOUND));
-        if (categoryDto.getName() == null || categoryDto.getName().isBlank()) {
-            throw new EwmException("Не указано наименование категории", "Category empty", HttpStatus.BAD_REQUEST);
-        }
+
         Category categoryName = repositoryCategory.findByNameAndNotId(categoryDto.getName(), id);
         if (categoryName != null) {
             throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);

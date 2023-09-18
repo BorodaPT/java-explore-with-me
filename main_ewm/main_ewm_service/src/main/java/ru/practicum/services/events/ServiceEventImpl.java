@@ -69,14 +69,6 @@ public class ServiceEventImpl implements ServiceEvent {
     @Override
     public EventFullDto createEvent(Long userId, NewEventDto newEvent) {
 
-        if (newEvent.getDescription() == null) {
-            throw new EwmException("Не заполенно поле Description", "Description not found", HttpStatus.BAD_REQUEST);
-        }
-
-        if (newEvent.getTitle() == null) {
-            throw new EwmException("Не заполенно поле Title", "Title not found", HttpStatus.BAD_REQUEST);
-        }
-
         User user = serviceUser.getById(userId);
         Category category = serviceCategory.getById(newEvent.getCategory());
         Event event = MapperEvent.toNewEvent(newEvent, category, user);

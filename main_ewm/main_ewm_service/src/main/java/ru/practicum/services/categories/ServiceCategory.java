@@ -7,14 +7,17 @@ import ru.practicum.services.categories.model.Category;
 
 import java.util.List;
 
-@Transactional
+@Transactional(readOnly = true)
 public interface ServiceCategory {
 
+    @Transactional
     //admin
     CategoryDto create(NewCategoryDto categoryDto);
 
+    @Transactional
     CategoryDto edit(Long id, NewCategoryDto categoryDto);
 
+    @Transactional
     void delete(Long id);
 
     //user

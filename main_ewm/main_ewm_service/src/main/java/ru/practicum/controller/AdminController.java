@@ -3,6 +3,7 @@ package ru.practicum.controller;
 import categories.dto.CategoryDto;
 import categories.dto.NewCategoryDto;
 import compilation.dto.CompilationDto;
+import compilation.dto.CompilationDtoEdit;
 import compilation.dto.NewCompilationDto;
 import events.dto.EventFullDto;
 import ru.practicum.services.events.model.StatusEvent;
@@ -26,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/admin")
 @Validated
-public class ControllerAdmin {
+public class AdminController {
 
     private final ServiceUser serviceUser;
 
@@ -102,8 +103,8 @@ public class ControllerAdmin {
 
     @PatchMapping("compilations/{compId}")
     public CompilationDto editCompilations(@PathVariable("compId") Long id,
-                                           @Valid @RequestBody NewCompilationDto newCompilationDto) {
-        return serviceCompilation.edit(id, newCompilationDto);
+                                           @Valid @RequestBody CompilationDtoEdit compilationDto) {
+        return serviceCompilation.edit(id, compilationDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
