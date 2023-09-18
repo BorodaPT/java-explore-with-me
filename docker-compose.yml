@@ -25,3 +25,30 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
     hostname: stats_db
+
+  main-service:
+    build: main_ewm/main_ewm_service/
+    container_name: ewm-main-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - main-db
+      - stats-server
+    environment:
+      - SERVER_PORT=8080
+      - DB_NAME=posters
+      - DB_HOST=main_ewm_db
+      - DB_PORT=5432
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+
+  main-db:
+    image: postgres:13.7-alpine
+    container_name: ewm-main-db
+    ports:
+      - "6540:5432"
+    environment:
+      - POSTGRES_DB=posters
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    hostname: main_ewm_db
