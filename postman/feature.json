@@ -28,7 +28,7 @@
 							"pm.test(\"Test comment 'event' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData).to.have.property('event');\r",
-							"    pm.expect(jsonData.event, '\"event\" must be 1').to.eql(1);\r",
+							"    pm.expect(jsonData.event, '\"event\" must be 102').to.eql(102);\r",
 							"});\r",
 							"pm.test(\"Test comment 'name' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -59,7 +59,7 @@
 					"raw": "{\r\n    \"description\":\"Первый!\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/comments",
+					"raw": "http://localhost:8080/users/1/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -69,7 +69,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -109,7 +109,7 @@
 					"raw": "{\r\n    \"description\":\"\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/comments",
+					"raw": "http://localhost:8080/users/1/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -119,7 +119,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -159,7 +159,7 @@
 					"raw": "{\r\n    \"description\":\"Нет пользователя\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/999999/events/1/comments",
+					"raw": "http://localhost:8080/users/999999/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -169,7 +169,7 @@
 						"users",
 						"999999",
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -254,7 +254,7 @@
 							"pm.test(\"Test comment 'event' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[0]).to.have.property('event');\r",
-							"    pm.expect(jsonData[0].event, '\"event\" must be 1').to.eql(1);\r",
+							"    pm.expect(jsonData[0].event, '\"event\" must be 102').to.eql(102);\r",
 							"});\r",
 							"pm.test(\"Test item 'name' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -275,7 +275,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/events/1/comments",
+					"raw": "http://localhost:8080/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -283,7 +283,7 @@
 					"port": "8080",
 					"path": [
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -328,7 +328,7 @@
 					"raw": "{\r\n    \"description\":\"Круто!\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/comments/1",
+					"raw": "http://localhost:8080/users/1/events/102/comments/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -338,7 +338,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"comments",
 						"1"
 					]
@@ -368,7 +368,7 @@
 							"pm.test(\"Test comment 'event' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData).to.have.property('event');\r",
-							"    pm.expect(jsonData.event, '\"event\" must be 1').to.eql(1);\r",
+							"    pm.expect(jsonData.event, '\"event\" must be 102').to.eql(102);\r",
 							"});\r",
 							"pm.test(\"Test comment 'name' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -399,7 +399,7 @@
 					"raw": "{\r\n    \"description\":\"Второй! не успел\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/2/events/1/comments",
+					"raw": "http://localhost:8080/users/2/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -409,7 +409,7 @@
 						"users",
 						"2",
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -455,7 +455,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/events/1/comments",
+					"raw": "http://localhost:8080/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -463,7 +463,7 @@
 					"port": "8080",
 					"path": [
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -498,7 +498,7 @@
 							"pm.test(\"Test comment 'event' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[0]).to.have.property('event');\r",
-							"    pm.expect(jsonData[0].event, '\"event\" must be 1').to.eql(1);\r",
+							"    pm.expect(jsonData[0].event, '\"event\" must be 102').to.eql(102);\r",
 							"});\r",
 							"pm.test(\"Test item 'name' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -519,7 +519,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/comments/1",
+					"raw": "http://localhost:8080/users/1/events/102/comments/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -529,7 +529,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"comments",
 						"1"
 					]
@@ -559,7 +559,7 @@
 							"pm.test(\"Test comment 'event' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData).to.have.property('event');\r",
-							"    pm.expect(jsonData.event, '\"event\" must be 1').to.eql(1);\r",
+							"    pm.expect(jsonData.event, '\"event\" must be 102').to.eql(102);\r",
 							"});\r",
 							"pm.test(\"Test comment 'name' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -590,7 +590,7 @@
 					"raw": "{\r\n    \"description\":\"Третий!\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/comments",
+					"raw": "http://localhost:8080/users/1/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -600,7 +600,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -624,12 +624,12 @@
 							"pm.test(\"Test comment 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData).to.have.property('id');\r",
-							"    pm.expect(jsonData.id, '\"id\" must be 1').to.eql(4);\r",
+							"    pm.expect(jsonData.id, '\"id\" must be 4').to.eql(4);\r",
 							"});\r",
 							"pm.test(\"Test comment 'event' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData).to.have.property('event');\r",
-							"    pm.expect(jsonData.event, '\"event\" must be 1').to.eql(1);\r",
+							"    pm.expect(jsonData.event, '\"event\" must be 102').to.eql(102);\r",
 							"});\r",
 							"pm.test(\"Test comment 'name' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -660,7 +660,7 @@
 					"raw": "{\r\n    \"description\":\"Четвертый!\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/comments",
+					"raw": "http://localhost:8080/users/1/events/102/comments",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -670,7 +670,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"comments"
 					]
 				}
@@ -716,7 +716,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/events/1/comments?from=0&size=2",
+					"raw": "http://localhost:8080/events/102/comments?from=0&size=2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -724,7 +724,7 @@
 					"port": "8080",
 					"path": [
 						"events",
-						"1",
+						"102",
 						"comments"
 					],
 					"query": [
@@ -784,7 +784,7 @@
 					"raw": "{\r\n    \"description\":\"admin\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/admin/events/1/comments/2",
+					"raw": "http://localhost:8080/admin/events/102/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -793,7 +793,7 @@
 					"path": [
 						"admin",
 						"events",
-						"1",
+						"102",
 						"comments",
 						"2"
 					]
@@ -819,12 +819,12 @@
 							"    pm.response.to.be.withBody;\r",
 							"    pm.response.to.be.json;\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.length, 'List length must be 2').to.eql(3);\r",
+							"    pm.expect(jsonData.length, 'List length must be 3').to.eql(3);\r",
 							"});\r",
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[0]).to.have.property('id');\r",
-							"    pm.expect(jsonData[0].id, '\"id\" must be 1').to.eql(2);\r",
+							"    pm.expect(jsonData[0].id, '\"id\" must be 2').to.eql(2);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -834,7 +834,7 @@
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[1]).to.have.property('id');\r",
-							"    pm.expect(jsonData[1].id, '\"id\" must be 2').to.eql(3);\r",
+							"    pm.expect(jsonData[1].id, '\"id\" must be 3').to.eql(3);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -844,7 +844,7 @@
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[2]).to.have.property('id');\r",
-							"    pm.expect(jsonData[2].id, '\"id\" must be 2').to.eql(4);\r",
+							"    pm.expect(jsonData[2].id, '\"id\" must be 4').to.eql(4);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -870,7 +870,7 @@
 					"raw": "{\r\n    \"description\":\"5698\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/admin/events/1/comments/visible?isVisible=false&commIds=3,4",
+					"raw": "http://localhost:8080/admin/events/102/comments/visible?isVisible=false&commIds=3,4",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -879,7 +879,7 @@
 					"path": [
 						"admin",
 						"events",
-						"1",
+						"102",
 						"comments",
 						"visible"
 					],
@@ -920,7 +920,7 @@
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[0]).to.have.property('id');\r",
-							"    pm.expect(jsonData[0].id, '\"id\" must be 2').to.eql(3);\r",
+							"    pm.expect(jsonData[0].id, '\"id\" must be 3').to.eql(3);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -930,7 +930,7 @@
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[1]).to.have.property('id');\r",
-							"    pm.expect(jsonData[1].id, '\"id\" must be 2').to.eql(4);\r",
+							"    pm.expect(jsonData[1].id, '\"id\" must be 4').to.eql(4);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
@@ -946,7 +946,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/admin/events/1/comments?isVisible=false",
+					"raw": "http://localhost:8080/admin/events/102/comments?isVisible=false",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -955,7 +955,7 @@
 					"path": [
 						"admin",
 						"events",
-						"1",
+						"102",
 						"comments"
 					],
 					"query": [
@@ -991,22 +991,22 @@
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[0]).to.have.property('id');\r",
-							"    pm.expect(jsonData[0].id, '\"id\" must be 2').to.eql(3);\r",
+							"    pm.expect(jsonData[0].id, '\"id\" must be 3').to.eql(3);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[0]).to.have.property('visible');\r",
-							"    pm.expect(jsonData[0].visible, '\"visible\" must be \"true\"').to.false;\r",
+							"    pm.expect(jsonData[0].visible, '\"visible\" must be \"false\"').to.false;\r",
 							"});\r",
 							"pm.test(\"Test item 'id' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[1]).to.have.property('id');\r",
-							"    pm.expect(jsonData[1].id, '\"id\" must be 2').to.eql(4);\r",
+							"    pm.expect(jsonData[1].id, '\"id\" must be 4').to.eql(4);\r",
 							"});\r",
 							"pm.test(\"Test comment 'available' field\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData[1]).to.have.property('visible');\r",
-							"    pm.expect(jsonData[1].visible, '\"visible\" must be \"true\"').to.false;\r",
+							"    pm.expect(jsonData[1].visible, '\"visible\" must be \"false\"').to.false;\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1017,7 +1017,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/admin/events/1/comments?commIds=2",
+					"raw": "http://localhost:8080/admin/events/102/comments?commIds=2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1026,7 +1026,7 @@
 					"path": [
 						"admin",
 						"events",
-						"1",
+						"102",
 						"comments"
 					],
 					"query": [
