@@ -23,7 +23,7 @@ public class CommentDto {
     private UserShortDto commentator;
 
     @JsonProperty(value = "event")
-    private Long event_id;
+    private Long eventId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
