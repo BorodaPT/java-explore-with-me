@@ -10,7 +10,7 @@ import ru.practicum.services.users.model.User;
 import java.util.List;
 
 @Repository
-public interface RepositoryUser extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select u from User as u " +
             "WHERE (coalesce(:ids, null) is null or (u.id in :ids))")

@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.EwmException;
 import ru.practicum.services.comments.mapper.MapperComment;
 import ru.practicum.services.comments.model.Comment;
-import ru.practicum.services.events.ServiceEvent;
+import ru.practicum.services.events.EventService;
 import ru.practicum.services.events.model.Event;
 import ru.practicum.services.events.model.StatusEvent;
-import ru.practicum.services.users.ServiceUser;
+import ru.practicum.services.users.UserService;
 import ru.practicum.services.users.model.User;
 
 import java.time.LocalDateTime;
@@ -22,21 +22,21 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ServiceCommentImpl implements ServiceComment {
+public class CommentServiceImpl implements CommentService {
 
-    private final RepositoryComment repositoryComment;
+    private final CommentRepository commentRepository;
 
-    private final ServiceUser serviceUser;
+    private final UserService userService;
 
-    private final ServiceEvent serviceEvent;
+    private final EventService eventService;
 
     @Transactional
     @Override
     public CommentDto create(Long idUser, Long idEvent, NewCommentDto newCommentDto) {
 
-        User user = serviceUser.getById(idUser);
+        User user = userService.getById(idUser);
 
-        Event event = serviceEvent.getEvent(idEvent);
+        Event event = eventService.getEvent(idEvent);
 
         if (event.getState() == StatusEvent.PENDING) {
             throw new EwmException("Событие не опубликовано", "Event not published or canceled", HttpStatus.BAD_REQUEST);
@@ -44,32 +44,33 @@ public class ServiceCommentImpl implements ServiceComment {
 
         Comment comment = MapperComment.toNewComment(newCommentDto, user, event);
 
-        return MapperComment.toDto(repositoryComment.save(comment));
+        return MapperComment.toDto(commentRepository.save(comment));
     }
 
     @Transactional
     @Override
     public CommentDto edit(Long idUser, Long idEvent, Long idComm, NewCommentDto newCommentDto, Boolean isAdmin) {
 
-        Comment comment = repositoryComment.findById(idComm).orElseThrow(() -> new EwmException("Комментарий не найден", "Comment not found", HttpStatus.NOT_FOUND));
+        Comment comment = commentRepository.findById(idComm).orElseThrow(() -> new EwmException("Комментарий не найден", "Comment not found", HttpStatus.NOT_FOUND));
 
         if (!isAdmin) {
             if (!comment.getCommentator().getId().equals(idUser)) {
                 throw new EwmException("Пользователь не владелец комментария", "user not owner", HttpStatus.NOT_FOUND);
             }
-            User user = serviceUser.getById(idUser);
+            User user = userService.getById(idUser);
         }
 
-        Event event = serviceEvent.getEvent(idEvent);
+        Event event = eventService.getEvent(idEvent);
 
         if (newCommentDto.getDescription() != null) {
             comment.setDescription(newCommentDto.getDescription());
             comment.setModified(LocalDateTime.now().withNano(0));
         }
 
-        return MapperComment.toDto(repositoryComment.save(comment));
+        return MapperComment.toDto(commentRepository.save(comment));
     }
 
+    @Transactional
     @Override
     public List<CommentDto> editVisible(Long idEvent, List<Long> commIds, Boolean isVisible) {
 
@@ -84,11 +85,11 @@ public class ServiceCommentImpl implements ServiceComment {
             throw new EwmException("Не указан список комментариев", "List is empty", HttpStatus.BAD_REQUEST);
         }
 
-        Event event = serviceEvent.getEvent(idEvent);
+        Event event = eventService.getEvent(idEvent);
         if (commIds.get(0) == 0L) {
-            repositoryComment.updateVisible(idEvent, null, isVisible);
+            commentRepository.updateVisible(idEvent, null, isVisible);
         } else {
-            repositoryComment.updateVisible(idEvent, commIds, isVisible);
+            commentRepository.updateVisible(idEvent, commIds, isVisible);
         }
 
         return getForEvent(idEvent, null, 0, 20);
@@ -98,19 +99,19 @@ public class ServiceCommentImpl implements ServiceComment {
     @Transactional
     @Override
     public List<CommentDto> deleteUser(Long idUser, Long idEvent, Long idComm) {
-        Comment comment = repositoryComment.findById(idComm).orElseThrow(() -> new EwmException("Комментарий не найден", "Comment not found", HttpStatus.NOT_FOUND));
+        Comment comment = commentRepository.findById(idComm).orElseThrow(() -> new EwmException("Комментарий не найден", "Comment not found", HttpStatus.NOT_FOUND));
 
-        User user = serviceUser.getById(idUser);
+        User user = userService.getById(idUser);
 
-        Event event = serviceEvent.getEvent(idEvent);
+        Event event = eventService.getEvent(idEvent);
 
         if (!comment.getCommentator().getId().equals(idUser)) {
             throw new EwmException("Пользователь не владелец комментария", "user not owner", HttpStatus.NOT_FOUND);
         }
 
-        repositoryComment.deleteById(idComm);
+        commentRepository.deleteById(idComm);
 
-        List<Comment> comments = repositoryComment.findAllByEventId(idEvent, true, PageRequest.of(0, 20));
+        List<Comment> comments = commentRepository.findAllByEventId(idEvent, true, PageRequest.of(0, 20));
 
         return MapperComment.toDto(comments);
 
@@ -126,15 +127,15 @@ public class ServiceCommentImpl implements ServiceComment {
             throw new EwmException("Не указан список комментариев", "List is empty", HttpStatus.BAD_REQUEST);
         }
 
-        Event event = serviceEvent.getEvent(idEvent);
+        Event event = eventService.getEvent(idEvent);
 
         if (commIds.get(0) == 0L) {
-            repositoryComment.deleteAllByEventId(idEvent,null);
+            commentRepository.deleteAllByEventId(idEvent,null);
         } else {
-            repositoryComment.deleteAllByEventId(idEvent,commIds);
+            commentRepository.deleteAllByEventId(idEvent,commIds);
         }
 
-        List<Comment> comments = repositoryComment.findAllByEventId(idEvent, null, PageRequest.of(0, 20));
+        List<Comment> comments = commentRepository.findAllByEventId(idEvent, null, PageRequest.of(0, 20));
 
         return MapperComment.toDto(comments);
     }
@@ -142,9 +143,9 @@ public class ServiceCommentImpl implements ServiceComment {
     @Override
     public List<CommentDto> getForEvent(Long eventId, Boolean isVisibleComment, Integer from, Integer size) {
 
-        Event event = serviceEvent.getEvent(eventId);
+        Event event = eventService.getEvent(eventId);
 
-        List<Comment> comments = repositoryComment.findAllByEventId(eventId, isVisibleComment, PageRequest.of(from / size, size));
+        List<Comment> comments = commentRepository.findAllByEventId(eventId, isVisibleComment, PageRequest.of(from / size, size));
 
         return MapperComment.toDto(comments);
     }

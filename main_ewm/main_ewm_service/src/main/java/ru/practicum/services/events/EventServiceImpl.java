@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.EwmException;
-import ru.practicum.services.categories.ServiceCategory;
+import ru.practicum.services.categories.CategoryService;
 import ru.practicum.services.categories.model.Category;
 import ru.practicum.services.events.enum_events.SortEvent;
 import ru.practicum.services.events.enum_events.StatusAction;
@@ -29,9 +29,9 @@ import ru.practicum.services.events.model.StatusEvent;
 import ru.practicum.services.events.enum_events.StatusUserRequestEvent;
 import ru.practicum.services.events.mapper.MapperEvent;
 import ru.practicum.services.events.model.Event;
-import ru.practicum.services.participants_request.ServiceParticipantsRequest;
+import ru.practicum.services.participants_request.ParticipantsRequestService;
 import ru.practicum.services.participants_request.model.ParticipationRequest;
-import ru.practicum.services.users.ServiceUser;
+import ru.practicum.services.users.UserService;
 import ru.practicum.services.users.model.User;
 import ru.practicum.statistics.StatsClient;
 
@@ -45,32 +45,33 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ServiceEventImpl implements ServiceEvent {
+public class EventServiceImpl implements EventService {
 
-    private final Logger log = LoggerFactory.getLogger(ServiceEventImpl.class);
+    private final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
-    private final RepositoryEvent repositoryEvent;
+    private final EventRepository eventRepository;
 
-    private final ServiceUser serviceUser;
+    private final UserService userService;
 
-    private final ServiceCategory serviceCategory;
+    private final CategoryService categoryService;
 
-    private final ServiceParticipantsRequest serviceParticipantsRequest;
+    private final ParticipantsRequestService participantsRequestService;
 
     private final StatsClient statsClient;
 
     @Override
     public Event getEvent(Long eventId) {
-        Event event = repositoryEvent.findById(eventId).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
         return event;
     }
 
     //user
+    @Transactional
     @Override
     public EventFullDto createEvent(Long userId, NewEventDto newEvent) {
 
-        User user = serviceUser.getById(userId);
-        Category category = serviceCategory.getById(newEvent.getCategory());
+        User user = userService.getById(userId);
+        Category category = categoryService.getById(newEvent.getCategory());
         Event event = MapperEvent.toNewEvent(newEvent, category, user);
 
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
@@ -85,14 +86,15 @@ public class ServiceEventImpl implements ServiceEvent {
         if (event.getRequestModeration() == null) {
             event.setRequestModeration(true);
         }
-        return MapperEvent.toNewEventFullDto(repositoryEvent.save(event));
+        return MapperEvent.toNewEventFullDto(eventRepository.save(event));
     }
 
+    @Transactional
     @Override
     public EventFullDto editEvent(Long userId, Long idEvent, UpdateEventUserRequest event) {
         log.info("Получение event {}", event);
 
-        User user = serviceUser.getById(userId);
+        User user = userService.getById(userId);
 
         Event eventBase = getEvent(idEvent);
         if (eventBase.getState() == StatusEvent.PUBLISHED) {
@@ -103,7 +105,7 @@ public class ServiceEventImpl implements ServiceEvent {
             eventBase.setAnnotation(event.getAnnotation());
         }
         if (event.getCategory() != null) {
-            Category category = serviceCategory.getById(event.getCategory().getId());
+            Category category = categoryService.getById(event.getCategory().getId());
             eventBase.setCategory(category);
         }
         if (event.getEventDate() != null) {
@@ -150,9 +152,9 @@ public class ServiceEventImpl implements ServiceEvent {
             }
 
         }
-        Event refEvent = repositoryEvent.saveAndFlush(eventBase);
+        Event refEvent = eventRepository.saveAndFlush(eventBase);
 
-        Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(refEvent.getId());
+        Long cntRequest = participantsRequestService.countRequestEventConfirmed(refEvent.getId());
 
         Long cntViews = getCountViews(refEvent.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + refEvent.getId()), false);
 
@@ -176,11 +178,12 @@ public class ServiceEventImpl implements ServiceEvent {
         }
     }
 
+    @Transactional
     @Override
     public EventRequestStatusUpdateResult editStatus(Long userId, Long idEvent, EventRequestStatusUpdateRequest statusUpdateRequest) {
         log.info("Получение event {}", statusUpdateRequest);
         Event eventBase = getEvent(idEvent);
-        Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(eventBase.getId());
+        Long cntRequest = participantsRequestService.countRequestEventConfirmed(eventBase.getId());
         if (eventBase.getParticipantLimit() != 0) {
             if (eventBase.getParticipantLimit().equals(cntRequest)) {
                 throw new EwmException("Лимит одобренных заявок", "The participant limit has been reached", HttpStatus.CONFLICT);
@@ -188,7 +191,7 @@ public class ServiceEventImpl implements ServiceEvent {
         }
 
         for (Long idRequest : statusUpdateRequest.getRequestIds()) {
-            ParticipationRequest request = serviceParticipantsRequest.getRequest(idRequest);
+            ParticipationRequest request = participantsRequestService.getRequest(idRequest);
 
             if (request.getStatus() != StatusUserRequestEvent.PENDING) {
                 throw new EwmException("Статус заявки не в ожидании", "Status not pending", HttpStatus.CONFLICT);
@@ -196,30 +199,30 @@ public class ServiceEventImpl implements ServiceEvent {
 
             if (statusUpdateRequest.getStatus() == StatusUserRequestEvent.CONFIRMED && eventBase.getParticipantLimit() != 0) {
                 if (eventBase.getParticipantLimit().equals(cntRequest)) {
-                    serviceParticipantsRequest.editRequestStatus(idRequest, StatusUserRequestEvent.REJECTED);
+                    participantsRequestService.editRequestStatus(idRequest, StatusUserRequestEvent.REJECTED);
                 } else {
-                    serviceParticipantsRequest.editRequestStatus(idRequest, statusUpdateRequest.getStatus());
+                    participantsRequestService.editRequestStatus(idRequest, statusUpdateRequest.getStatus());
                     cntRequest++;
                 }
             } else {
-                serviceParticipantsRequest.editRequestStatus(idRequest, statusUpdateRequest.getStatus());
+                participantsRequestService.editRequestStatus(idRequest, statusUpdateRequest.getStatus());
             }
         }
 
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
-        result.setConfirmedRequests(serviceParticipantsRequest.getRequestsByStatus(idEvent, StatusUserRequestEvent.CONFIRMED));
-        result.setRejectedRequests(serviceParticipantsRequest.getRequestsByStatus(idEvent, StatusUserRequestEvent.REJECTED));
+        result.setConfirmedRequests(participantsRequestService.getRequestsByStatus(idEvent, StatusUserRequestEvent.CONFIRMED));
+        result.setRejectedRequests(participantsRequestService.getRequestsByStatus(idEvent, StatusUserRequestEvent.REJECTED));
         return result;
     }
 
     @Override
     public List<EventShortDto> getUserEvents(Long userId, Integer from, Integer size) {
-        User user = serviceUser.getById(userId);
-        List<Event> events = repositoryEvent.findByInitiator_id(userId, PageRequest.of(from / size, size)).getContent();
+        User user = userService.getById(userId);
+        List<Event> events = eventRepository.findByInitiator_id(userId, PageRequest.of(from / size, size)).getContent();
         List<EventShortDto> results = new ArrayList<>();
         if (events.size() != 0) {
             for (Event event : events) {
-                Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+                Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
                 Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
                 results.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
             }
@@ -229,24 +232,24 @@ public class ServiceEventImpl implements ServiceEvent {
 
     @Override
     public EventFullDto getUserEvent(Long userId, Long eventId) {
-        User user = serviceUser.getById(userId);
+        User user = userService.getById(userId);
         Event event = getEvent(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
             throw new EwmException("Пользователь не является владельцем события", "User is not owner event", HttpStatus.CONFLICT);
         }
-        Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+        Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
 
     @Override
     public List<ParticipationRequestDto> getRequestFromEvent(Long userId, Long eventId) {
-        User user = serviceUser.getById(userId);
+        User user = userService.getById(userId);
         Event event = getEvent(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
             throw new EwmException("Пользователь не является владельцем события", "User is not owner event", HttpStatus.CONFLICT);
         }
-        return serviceParticipantsRequest.getRequestsFromEvent(eventId);
+        return participantsRequestService.getRequestsFromEvent(eventId);
     }
 
     //ADMIN
@@ -269,14 +272,14 @@ public class ServiceEventImpl implements ServiceEvent {
         }
 
         if (rangeStart == null && rangeEnd == null) {
-            events = repositoryEvent.findEventForAdminWithoutDate(
+            events = eventRepository.findEventForAdminWithoutDate(
                             (queryUsers.size() == 0) ? null : queryUsers,
                             state,
                             (queryCategories.size() == 0) ? null : queryCategories,
                             PageRequest.of(from / size, size))
                             .getContent();
         } else {
-            events = repositoryEvent.findEventForAdminWithDate(
+            events = eventRepository.findEventForAdminWithDate(
                             rangeStart,
                             rangeEnd,
                             (queryUsers.size() == 0) ? null : queryUsers,
@@ -287,7 +290,7 @@ public class ServiceEventImpl implements ServiceEvent {
         }
         if (events.size() != 0) {
             for (Event event : events) {
-                Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+                Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
                 Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
                 resultEvents.add(MapperEvent.toEventFullDto(event, cntViews, cntRequest));
             }
@@ -295,6 +298,7 @@ public class ServiceEventImpl implements ServiceEvent {
         return resultEvents;
     }
 
+    @Transactional
     @Override
     public EventFullDto editEventAdmin(Long id, UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("Получение фильма {}", updateEventAdminRequest);
@@ -303,7 +307,7 @@ public class ServiceEventImpl implements ServiceEvent {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
         if (updateEventAdminRequest.getCategory() != null) {
-            Category category = serviceCategory.getById(updateEventAdminRequest.getCategory());
+            Category category = categoryService.getById(updateEventAdminRequest.getCategory());
             event.setCategory(category);
         }
         if (updateEventAdminRequest.getDescription() != null && !updateEventAdminRequest.getDescription().isBlank()) {
@@ -347,8 +351,8 @@ public class ServiceEventImpl implements ServiceEvent {
         if (updateEventAdminRequest.getTitle() != null && !updateEventAdminRequest.getTitle().isBlank()) {
             event.setTitle(updateEventAdminRequest.getTitle());
         }
-        Event refEvent = repositoryEvent.save(event);
-        Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+        Event refEvent = eventRepository.save(event);
+        Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
         return MapperEvent.toEventFullDto(refEvent, cntViews, cntRequest);
     }
@@ -373,7 +377,7 @@ public class ServiceEventImpl implements ServiceEvent {
         statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
         List<Event> events;
         if (text != null) {
-            events = repositoryEvent.findEventForPublicWithText(
+            events = eventRepository.findEventForPublicWithText(
                     paid,
                     text,
                     categories,
@@ -382,7 +386,7 @@ public class ServiceEventImpl implements ServiceEvent {
                     PageRequest.of(from, size))
                     .getContent();
         } else {
-            events = repositoryEvent.findEventForPublic(
+            events = eventRepository.findEventForPublic(
                     paid,
                     categories,
                     (rangeStart == null) ? LocalDateTime.now().withNano(0) : rangeStart,
@@ -394,7 +398,7 @@ public class ServiceEventImpl implements ServiceEvent {
         List<EventShortDto> results = new ArrayList<>();
         if (events.size() != 0) {
             for (Event event : events) {
-                Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+                Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
                 if (onlyAvailable && event.getParticipantLimit() != 0) {
                     if (!event.getParticipantLimit().equals(cntRequest)) {
                         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), true);
@@ -420,11 +424,11 @@ public class ServiceEventImpl implements ServiceEvent {
     @Override
     public EventFullDto getEventPublicForUserById(Long id, HttpServletRequest request) {
         statsClient.postHit(new HitDto("ewm_service", request.getRequestURI(), request.getRemoteAddr()));
-        Event event = repositoryEvent.findById(id).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND));
         if (event.getState() != StatusEvent.PUBLISHED) {
             throw new EwmException("Событие не найдено", "Event not found", HttpStatus.NOT_FOUND);
         }
-        Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+        Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
         Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), true);
         return MapperEvent.toEventFullDto(event, cntViews, cntRequest);
     }
@@ -434,7 +438,7 @@ public class ServiceEventImpl implements ServiceEvent {
     public List<EventShortDto> getListEventDtoForCompilation(List<Event> events) {
         List<EventShortDto> resultEvents = new ArrayList<>();
         for (Event event : events) {
-            Long cntRequest = serviceParticipantsRequest.countRequestEventConfirmed(event.getId());
+            Long cntRequest = participantsRequestService.countRequestEventConfirmed(event.getId());
             Long cntViews = getCountViews(event.getCreatedOn(), LocalDateTime.now().withNano(0), List.of("/events/" + event.getId()), false);
             resultEvents.add(MapperEvent.toEventShortDto(event, cntViews, cntRequest));
         }

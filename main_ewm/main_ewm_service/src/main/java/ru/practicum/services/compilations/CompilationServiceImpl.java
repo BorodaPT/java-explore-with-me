@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.EwmException;
 import ru.practicum.services.compilations.mapper.MapperCompilation;
 import ru.practicum.services.compilations.model.Compilation;
-import ru.practicum.services.events.ServiceEvent;
+import ru.practicum.services.events.EventService;
 import ru.practicum.services.events.model.Event;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ServiceCompilationImpl implements ServiceCompilation {
+public class CompilationServiceImpl implements CompilationService {
 
-    private final RepositoryCompilation repositoryCompilation;
+    private final CompilationRepository compilationRepository;
 
-    private final ServiceEvent serviceEvent;
+    private final EventService eventService;
 
     @Transactional
     @Override
@@ -34,18 +34,18 @@ public class ServiceCompilationImpl implements ServiceCompilation {
             newCompilationDto.setPinned(false);
         }
 
-        List<Event> events = serviceEvent.getListEventForCompilation(newCompilationDto.getEvents());
+        List<Event> events = eventService.getListEventForCompilation(newCompilationDto.getEvents());
         Compilation compilation = MapperCompilation.toCompilation(newCompilationDto, events);
-        repositoryCompilation.save(compilation);
-        return MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(events));
+        compilationRepository.save(compilation);
+        return MapperCompilation.toResultDto(compilation, eventService.getListEventDtoForCompilation(events));
     }
 
     @Transactional
     @Override
     public CompilationDto edit(Long id, CompilationDtoEdit compilationDto) {
-        Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
+        Compilation compilation = compilationRepository.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
 
-        List<Event> events = serviceEvent.getListEventForCompilation(compilationDto.getEvents());
+        List<Event> events = eventService.getListEventForCompilation(compilationDto.getEvents());
         if (events.size() != 0) {
             compilation.setEvents(events);
         }
@@ -56,26 +56,26 @@ public class ServiceCompilationImpl implements ServiceCompilation {
             compilation.setPinned(compilationDto.getPinned());
         }
 
-        repositoryCompilation.save(compilation);
+        compilationRepository.save(compilation);
 
-        return MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(events));
+        return MapperCompilation.toResultDto(compilation, eventService.getListEventDtoForCompilation(events));
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        Compilation compilation = repositoryCompilation.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
-        repositoryCompilation.deleteById(id);
+        Compilation compilation = compilationRepository.findById(id).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
+        compilationRepository.deleteById(id);
     }
 
     //public
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
-        List<Compilation> compilations = (pinned == null) ? repositoryCompilation.findAll(PageRequest.of(from / size, size)).getContent() : repositoryCompilation.findAllByPinned(pinned, PageRequest.of(from / size, size));
+        List<Compilation> compilations = (pinned == null) ? compilationRepository.findAll(PageRequest.of(from / size, size)).getContent() : compilationRepository.findAllByPinned(pinned, PageRequest.of(from / size, size));
         List<CompilationDto> results = new ArrayList<>();
         if (compilations.size() != 0) {
             for (Compilation compilation : compilations) {
-                results.add(MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(compilation.getEvents())));
+                results.add(MapperCompilation.toResultDto(compilation, eventService.getListEventDtoForCompilation(compilation.getEvents())));
             }
         }
         return results;
@@ -83,8 +83,8 @@ public class ServiceCompilationImpl implements ServiceCompilation {
 
     @Override
     public CompilationDto getCompilationsById(Long compId) {
-        Compilation compilation = repositoryCompilation.findById(compId).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
+        Compilation compilation = compilationRepository.findById(compId).orElseThrow(() -> new EwmException("Подборка не найдена", "Compilation not found", HttpStatus.NOT_FOUND));
 
-        return MapperCompilation.toResultDto(compilation, serviceEvent.getListEventDtoForCompilation(compilation.getEvents()));
+        return MapperCompilation.toResultDto(compilation, eventService.getListEventDtoForCompilation(compilation.getEvents()));
     }
 }

@@ -9,7 +9,7 @@ import ru.practicum.services.categories.model.Category;
 
 
 @Repository
-public interface RepositoryCategory extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query(value = "select c.* from categories c " +
                    "where c.name = ?1 AND c.id <> ?2", nativeQuery = true)

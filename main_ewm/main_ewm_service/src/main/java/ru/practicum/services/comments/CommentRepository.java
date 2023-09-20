@@ -10,7 +10,7 @@ import ru.practicum.services.comments.model.Comment;
 import java.util.List;
 
 @Repository
-public interface RepositoryComment extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query(value = "select c from Comment c " +
                    "where c.event.id = :eventId " +
