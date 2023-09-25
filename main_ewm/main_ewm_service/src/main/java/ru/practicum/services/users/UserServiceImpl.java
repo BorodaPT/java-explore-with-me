@@ -15,9 +15,9 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ServiceUserImpl implements ServiceUser {
+public class UserServiceImpl implements UserService {
 
-    private final RepositoryUser repositoryUser;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -30,7 +30,7 @@ public class ServiceUserImpl implements ServiceUser {
             throw new EwmException("Не заполенно поле Email", "Email not found", HttpStatus.BAD_REQUEST);
         }
         try {
-            return MapperUser.toDTO(repositoryUser.save(MapperUser.toUser(user)));
+            return MapperUser.toDTO(userRepository.save(MapperUser.toUser(user)));
         } catch (RuntimeException e) {
             throw new EwmException("Недопустимое значения параметров пользователя", e.getMessage(), HttpStatus.CONFLICT);
         }
@@ -39,17 +39,17 @@ public class ServiceUserImpl implements ServiceUser {
     @Transactional
     @Override
     public void delete(Long id) {
-        User user = repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден", "User not found", HttpStatus.NOT_FOUND));
-        repositoryUser.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new EwmException("Пользователь для удаления не найден", "User not found", HttpStatus.NOT_FOUND));
+        userRepository.deleteById(id);
     }
 
     @Override
     public List<UserDto> get(List<Long> ids, Integer from, Integer size) {
-        return MapperUser.toDTO(repositoryUser.findById(ids, PageRequest.of(from / size, size)).getContent());
+        return MapperUser.toDTO(userRepository.findById(ids, PageRequest.of(from / size, size)).getContent());
     }
 
     @Override
     public User getById(Long id) {
-        return repositoryUser.findById(id).orElseThrow(() -> new EwmException("Пользователь не найден", "User not found", HttpStatus.NOT_FOUND));
+        return userRepository.findById(id).orElseThrow(() -> new EwmException("Пользователь не найден", "User not found", HttpStatus.NOT_FOUND));
     }
 }

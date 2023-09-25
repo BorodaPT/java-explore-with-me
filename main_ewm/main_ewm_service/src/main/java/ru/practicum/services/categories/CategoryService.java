@@ -2,22 +2,17 @@ package ru.practicum.services.categories;
 
 import categories.dto.CategoryDto;
 import categories.dto.NewCategoryDto;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.services.categories.model.Category;
 
 import java.util.List;
 
-@Transactional(readOnly = true)
-public interface ServiceCategory {
+public interface CategoryService {
 
-    @Transactional
     //admin
     CategoryDto create(NewCategoryDto categoryDto);
 
-    @Transactional
     CategoryDto edit(Long id, NewCategoryDto categoryDto);
 
-    @Transactional
     void delete(Long id);
 
     //user

@@ -6,25 +6,20 @@ import events.dto.NewEventDto;
 import events.dto.ParticipationRequestDto;
 import ru.practicum.services.events.enum_events.SortEvent;
 import ru.practicum.services.events.model.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Transactional(readOnly = true)
-public interface ServiceEvent {
+public interface EventService {
 
     Event getEvent(Long eventId);
 
     //user
-    @Transactional
     EventFullDto createEvent(Long userId, NewEventDto event);
 
-    @Transactional
     EventFullDto editEvent(Long userId, Long idEvent, UpdateEventUserRequest event);
 
-    @Transactional
     EventRequestStatusUpdateResult editStatus(Long userId, Long idEvent, EventRequestStatusUpdateRequest statusUpdateRequest);
 
     List<EventShortDto> getUserEvents(Long userId, Integer from, Integer size);
@@ -42,7 +37,6 @@ public interface ServiceEvent {
                                         Integer from,
                                         Integer size);
 
-    @Transactional
     EventFullDto editEventAdmin(Long id, UpdateEventAdminRequest updateEventAdminRequest);
 
     //public

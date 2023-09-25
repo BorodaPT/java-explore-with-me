@@ -34,6 +34,8 @@ public class PersistenceConfig {
                 environment.getProperty("javax.persistence.schema-generation.database.action", "none"));
         properties.put("javax.persistence.schema-generation.create-script-source",
                 environment.getProperty("javax.persistence.schema-generation.create-script-source"));
+        properties.put("hibernate.hbm2ddl.import_files_sql_extractor",
+                environment.getProperty("spring.jpa.properties.hibernate.hbm2ddl.import_files_sql_extractor"));
         return properties;
     }
 

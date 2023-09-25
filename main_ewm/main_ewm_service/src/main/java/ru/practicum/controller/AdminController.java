@@ -13,10 +13,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.services.categories.ServiceCategory;
-import ru.practicum.services.compilations.ServiceCompilation;
-import ru.practicum.services.events.ServiceEvent;
-import ru.practicum.services.users.ServiceUser;
+import ru.practicum.services.categories.CategoryService;
+import ru.practicum.services.compilations.CompilationService;
+import ru.practicum.services.events.EventService;
+import ru.practicum.services.users.UserService;
 import users.dto.UserDto;
 
 import javax.validation.Valid;
@@ -29,31 +29,31 @@ import java.util.List;
 @Validated
 public class AdminController {
 
-    private final ServiceUser serviceUser;
+    private final UserService userService;
 
-    private final ServiceCategory serviceCategory;
+    private final CategoryService categoryService;
 
-    private final ServiceEvent serviceEvent;
+    private final EventService eventService;
 
-    private final ServiceCompilation serviceCompilation;
+    private final CompilationService compilationService;
 
     //categories
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/categories")
     public CategoryDto create(@Valid @RequestBody NewCategoryDto newCategoryDto) {
-        return serviceCategory.create(newCategoryDto);
+        return categoryService.create(newCategoryDto);
     }
 
     @PatchMapping("/categories/{catId}")
     public CategoryDto edit(@PathVariable("catId") Long id,
                             @Valid @RequestBody NewCategoryDto newCategoryDto) {
-        return serviceCategory.edit(id, newCategoryDto);
+        return categoryService.edit(id, newCategoryDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/categories/{catId}")
     public void delete(@PathVariable("catId") Long id) {
-        serviceCategory.delete(id);
+        categoryService.delete(id);
     }
 
     //events
@@ -65,13 +65,13 @@ public class AdminController {
                                          @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                          @RequestParam(name = "from", required = false, defaultValue = "0") Integer from,
                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
-        return serviceEvent.getEventForAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
+        return eventService.getEventForAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/events/{eventId}")
     public EventFullDto editEvent(@PathVariable("eventId") Long id,
                                   @Valid @RequestBody UpdateEventAdminRequest request) {
-        return serviceEvent.editEventAdmin(id, request);
+        return eventService.editEventAdmin(id, request);
     }
 
     //users
@@ -79,37 +79,37 @@ public class AdminController {
     public List<UserDto> findUsers(@RequestParam(name = "ids", required = false) List<Long> idUsers,
                                    @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                    @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
-        return serviceUser.get(idUsers, start, size);
+        return userService.get(idUsers, start, size);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/users")
     public UserDto createUser(@Valid @RequestBody UserDto userDto) {
-        return serviceUser.create(userDto);
+        return userService.create(userDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/users/{userId}")
     public void deleteUser(@PathVariable("userId") Long id) {
-        serviceUser.delete(id);
+        userService.delete(id);
     }
 
     //compilations
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("compilations")
     public CompilationDto createCompilations(@Valid @RequestBody NewCompilationDto newCompilationDto) {
-        return serviceCompilation.create(newCompilationDto);
+        return compilationService.create(newCompilationDto);
     }
 
     @PatchMapping("compilations/{compId}")
     public CompilationDto editCompilations(@PathVariable("compId") Long id,
                                            @Valid @RequestBody CompilationDtoEdit compilationDto) {
-        return serviceCompilation.edit(id, compilationDto);
+        return compilationService.edit(id, compilationDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("compilations/{compId}")
     public void deleteCompilations(@PathVariable("compId") Long id) {
-        serviceCompilation.delete(id);
+        compilationService.delete(id);
     }
 }

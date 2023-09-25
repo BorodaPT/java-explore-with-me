@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.services.categories.ServiceCategory;
-import ru.practicum.services.compilations.ServiceCompilation;
-import ru.practicum.services.events.ServiceEvent;
+import ru.practicum.services.categories.CategoryService;
+import ru.practicum.services.compilations.CompilationService;
+import ru.practicum.services.events.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -25,35 +25,35 @@ import java.util.List;
 @Validated
 public class PublicController {
 
-    private final ServiceCompilation serviceCompilation;
+    private final CompilationService compilationService;
 
-    private final ServiceEvent serviceEvent;
+    private final EventService eventService;
 
-    private final ServiceCategory serviceCategory;
+    private final CategoryService categoryService;
 
     //Compilation
     @GetMapping("/compilations")
     public List<CompilationDto> findCompilation(@RequestParam(name = "pinned", required = false) Boolean pinned,
                                                 @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                                 @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
-        return serviceCompilation.getCompilations(pinned, start, size);
+        return compilationService.getCompilations(pinned, start, size);
     }
 
     @GetMapping("/compilations/{compId}")
     public CompilationDto findCompilationId(@PathVariable("compId") Long id) {
-        return serviceCompilation.getCompilationsById(id);
+        return compilationService.getCompilationsById(id);
     }
 
     //categories
     @GetMapping("/categories")
     public List<CategoryDto> findCategories(@RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                             @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
-        return serviceCategory.getForUser(start, size);
+        return categoryService.getForUser(start, size);
     }
 
     @GetMapping("/categories/{catId}")
     public CategoryDto findCategoriesId(@PathVariable("catId") Long id) {
-        return serviceCategory.getForUserById(id);
+        return categoryService.getForUserById(id);
     }
 
     //events
@@ -68,12 +68,12 @@ public class PublicController {
                                           @RequestParam(name = "from", required = false, defaultValue = "0") Integer start,
                                           @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
                                           HttpServletRequest request) {
-        return serviceEvent.getEventsPublic(text, categories, isPaid, rangeStart, rangeEnd, isOnlyAvailable, sort, start, size, request);
+        return eventService.getEventsPublic(text, categories, isPaid, rangeStart, rangeEnd, isOnlyAvailable, sort, start, size, request);
     }
 
     @GetMapping("/events/{id}")
     public EventFullDto findEventsId(@PathVariable("id") Long id, HttpServletRequest request) {
-        return serviceEvent.getEventPublicForUserById(id, request);
+        return eventService.getEventPublicForUserById(id, request);
     }
 
 }

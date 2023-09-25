@@ -8,7 +8,7 @@ import ru.practicum.services.participants_request.model.ParticipationRequest;
 import java.util.List;
 
 @Repository
-public interface RepositoryParticipantsRequest extends JpaRepository<ParticipationRequest, Long> {
+public interface ParticipantsRequestRepository extends JpaRepository<ParticipationRequest, Long> {
 
     @Query(value = "SELECT count(pr.*) FROM participants_request as pr WHERE pr.event_id = ?1 AND pr.status = ?2", nativeQuery = true)
     Long getCountConfirmedRequests(Long idEvent, String status);

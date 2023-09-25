@@ -16,44 +16,44 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ServiceCategoryImpl implements ServiceCategory {
+public class CategoryServiceImpl implements CategoryService {
 
-    private final RepositoryCategory repositoryCategory;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     @Override
     public CategoryDto create(NewCategoryDto categoryDto) {
 
-        if (repositoryCategory.existsByName(categoryDto.getName())) {
+        if (categoryRepository.existsByName(categoryDto.getName())) {
             throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
 
-        return MapperCategory.toDTO(repositoryCategory.save(MapperCategory.toCategory(categoryDto)));
+        return MapperCategory.toDTO(categoryRepository.save(MapperCategory.toCategory(categoryDto)));
     }
 
     @Transactional
     @Override
     public CategoryDto edit(Long id, NewCategoryDto categoryDto) {
-        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория для изменения не найдена", "Category not found", HttpStatus.NOT_FOUND));
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new EwmException("Категория для изменения не найдена", "Category not found", HttpStatus.NOT_FOUND));
 
-        Category categoryName = repositoryCategory.findByNameAndNotId(categoryDto.getName(), id);
+        Category categoryName = categoryRepository.findByNameAndNotId(categoryDto.getName(), id);
         if (categoryName != null) {
             throw new EwmException("Наименование не уникально", "Category double", HttpStatus.CONFLICT);
         }
         category.setName(categoryDto.getName());
-        return MapperCategory.toDTO(repositoryCategory.save(category));
+        return MapperCategory.toDTO(categoryRepository.save(category));
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
         try {
-            Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Категория не найдена", "Category not found", HttpStatus.NOT_FOUND));
-            Category categoryEvent = repositoryCategory.findEventCategory(id);
+            Category category = categoryRepository.findById(id).orElseThrow(() -> new EwmException("Категория не найдена", "Category not found", HttpStatus.NOT_FOUND));
+            Category categoryEvent = categoryRepository.findEventCategory(id);
             if (categoryEvent != null) {
                 throw new EwmException("У категории есть эвенты", "Category have event", HttpStatus.CONFLICT);
             }
-            repositoryCategory.deleteById(id);
+            categoryRepository.deleteById(id);
         } catch (RuntimeException e) {
             throw new EwmException("Не удалось удалить категорию", "Cant delete category", HttpStatus.CONFLICT);
         }
@@ -62,17 +62,17 @@ public class ServiceCategoryImpl implements ServiceCategory {
     //user
     @Override
     public List<CategoryDto> getForUser(Integer from, Integer size) {
-        return MapperCategory.toDTO(repositoryCategory.findAllCat(PageRequest.of(from / size, size)).getContent());
+        return MapperCategory.toDTO(categoryRepository.findAllCat(PageRequest.of(from / size, size)).getContent());
     }
 
     @Override
     public CategoryDto getForUserById(Long id) {
-        Category category = repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa", "Category not found", HttpStatus.NOT_FOUND));
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa", "Category not found", HttpStatus.NOT_FOUND));
         return MapperCategory.toDTO(category);
     }
 
     @Override
     public Category getById(Long id) {
-        return repositoryCategory.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa", "Category not found", HttpStatus.NOT_FOUND));
+        return categoryRepository.findById(id).orElseThrow(() -> new EwmException("Катекория " + id + "не найденa", "Category not found", HttpStatus.NOT_FOUND));
     }
 }
